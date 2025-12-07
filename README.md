@@ -4,7 +4,7 @@ My personal configuration files for macOS, featuring a high-performance setup wi
 
 The visual style is unified around the **Tokyo Night** theme. This repository also addresses the "Green Bar" issue on macOS where Tmux themes fail to load due to outdated system Bash versions.
 
-## 🛠 Initial setup
+## Initial setup
 
 * **1. Install [Homebrew](https://brew.sh/)**
   ```bash
@@ -18,26 +18,22 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
   ```bash
   brew install tmux
 
-* **4. Install [LazyVim](https://www.lazyvim.org/)**
+* **4. Install [Neovim](https://neovim.io/)**
+  ```bash
+  brew install neovim
+
+* **5. Install [LazyVim](https://www.lazyvim.org/)**
   ```bash
   git clone https://github.com/LazyVim/starter ~/.config/nvim
   rm -rf ~/.config/nvim/.git
-  
-* **Ghostty:** [Download Ghostty](https://mitchellh.com/ghostty)
-
-* **Tmux:** `brew install tmux`
-* **Neovim (v0.9+):** `brew install neovim`
-* **Bash (v4+):** `brew install bash`
-* **Nerd Font:** (Ghostty includes one, but `JetBrains Mono Nerd Font` is recommended).
 
 ---
 
-## ⚠️ Step 1: Fix the "Green Bar" (One-Time Setup)
+## Step 1: Fix the theme crashing
 
-macOS ships with **Bash v3.2** (from 2007) by default. The `tmux-tokyo-night` plugin requires **Bash 4.0+**. Without this fix, the theme crashes and displays a default green status bar.
+macOS ships with **Bash v3.2** (from 2007) by default. The `tmux-tokyo-night` plugin requires **Bash 4.0+**. Without this fix, the theme crashes.
 
-Run these commands in your terminal:
-
+***
 ```bash
 # 1. Install modern Bash
 brew install bash

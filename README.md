@@ -9,6 +9,10 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
 * **1. Install [Homebrew](https://brew.sh/)**
   ```bash
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+* **1. Install modern bash**
+  ```bash
+  brew install bash
   
 * **2. Install [Ghostty](https://ghostty.org/)**
   ```bash

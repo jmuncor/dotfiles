@@ -4,10 +4,12 @@ My personal configuration files for macOS, featuring a high-performance setup wi
 
 The visual style is unified around the **Tokyo Night** theme. This repository also addresses the "Green Bar" issue on macOS where Tmux themes fail to load due to outdated system Bash versions.
 
-## 🛠 Prerequisites
+## 🛠 Initial app setup
+
+* [**Homebrew**]([https://brew.sh/]) Install homebrew package manager to install and manage everything else.
 
 * **Ghostty:** [Download Ghostty](https://mitchellh.com/ghostty)
-* **Homebrew:** The missing package manager for macOS.
+
 * **Tmux:** `brew install tmux`
 * **Neovim (v0.9+):** `brew install neovim`
 * **Bash (v4+):** `brew install bash`

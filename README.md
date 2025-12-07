@@ -6,19 +6,19 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
 
 ## 🛠 Initial setup
 
-* **1. Install Homebrew**
+* **1. Install [Homebrew](https://brew.sh/)**
   ```bash
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   
-* **2. Install Ghostty**
+* **2. Install [Ghostty](https://ghostty.org/)**
   ```bash
   brew install --cask ghostty
 
-* **3. Install [Tmux](https://github.com/tmux/tmux/wiki)x**
+* **3. Install [Tmux](https://github.com/tmux/tmux/wiki)**
   ```bash
   brew install tmux
 
-* **4. Install LazyVim**
+* **4. Install [LazyVim](https://www.lazyvim.org/)**
   
 * **Ghostty:** [Download Ghostty](https://mitchellh.com/ghostty)
 

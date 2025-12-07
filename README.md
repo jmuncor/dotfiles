@@ -6,7 +6,8 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
 
 ## 🛠 Initial app setup
 
-* [**Homebrew**]([https://brew.sh/]) Install homebrew package manager to install and manage everything else.
+* [**Homebrew**](https://brew.sh/) Install homebrew package manager.
+* 
 
 * **Ghostty:** [Download Ghostty](https://mitchellh.com/ghostty)
 

@@ -4,11 +4,15 @@ My personal configuration files for macOS, featuring a high-performance setup wi
 
 The visual style is unified around the **Tokyo Night** theme. This repository also addresses the "Green Bar" issue on macOS where Tmux themes fail to load due to outdated system Bash versions.
 
-## Initial setup
+## Step 1: Initial setup
 
 * **1. Install [Homebrew](https://brew.sh/)**
   ```bash
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+* **1. Install modern Bash**
+  ```bash
+  brew install bash
   
 * **2. Install [Ghostty](https://ghostty.org/)**
   ```bash
@@ -28,17 +32,35 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
   rm -rf ~/.config/nvim/.git
 
 ---
+## Step 2: Get the config files
 
-## Step 1: Fix the theme crashing
+Clone the repository:
+```bash
+git clone https://github.com/jmuncor/.dotfiles.git ~/.dotfiles
+```
 
-macOS ships with **Bash v3.2** (from 2007) by default. The `tmux-tokyo-night` plugin requires **Bash 4.0+**. Without this fix, the theme crashes.
+---
+## Step 3: System linking the Ghostty and Tmux config files
+
+Link the default config files to the dotfiles folder
 
 ```bash
-# 1. Install modern Bash
-brew install bash
+# 1. Ghostty
+mkdir -p ~/.config/ghostty
+rm ~/.config/ghostty/config
+ln -s ~/.dotfiles/ghostty/config ~/.config/ghostty/config
 
-# 2. Add Homebrew binary path to your shell config
-echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
+# 2. Tmux
+mkdir -p ~/.config/tmux
+rm ~/.tmux.conf
+rm ~/.config/tmux/tmux.conf
+ln -s ~/.dotfiles/tmux/tmux.conf ~/.config/tmux/tmux.conf
+```
 
-# 3. Reload settings
+---
+## Step 4: Source the config.zsh in the .zshrc file
+
+```bash
+echo 'source ~/.dotfiles/zsh/config.zsh' >> ~/.zshrc
 source ~/.zshrc
+```

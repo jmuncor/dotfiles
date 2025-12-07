@@ -36,7 +36,7 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
 
 Clone the repository:
 ```bash
-git clone [https://github.com/jmuncor/dotfiles.git](https://github.com/jmuncor/dotfiles.git) ~/.dotfiles
+git clone https://github.com/jmuncor/.dotfiles.git ~/.dotfiles
 ```
 
 ---

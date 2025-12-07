@@ -19,6 +19,12 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
   brew install tmux
 
 * **4. Install [LazyVim](https://www.lazyvim.org/)**
+  ```bash
+  git clone https://github.com/LazyVim/starter ~/.config/nvim
+  rm -rf ~/.config/nvim/.git
+
+
+
   
 * **Ghostty:** [Download Ghostty](https://mitchellh.com/ghostty)
 

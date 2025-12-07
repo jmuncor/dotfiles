@@ -31,7 +31,6 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
   git clone https://github.com/LazyVim/starter ~/.config/nvim
   rm -rf ~/.config/nvim/.git
 
----
 ## Step 2: Get the config files
 
 Clone the repository:
@@ -39,7 +38,6 @@ Clone the repository:
 git clone https://github.com/jmuncor/.dotfiles.git ~/.dotfiles
 ```
 
----
 ## Step 3: System linking the Ghostty and Tmux config files
 
 Link the default config files to the dotfiles folder
@@ -57,7 +55,6 @@ rm ~/.config/tmux/tmux.conf
 ln -s ~/.dotfiles/tmux/tmux.conf ~/.config/tmux/tmux.conf
 ```
 
----
 ## Step 4: Source the config.zsh in the .zshrc file
 
 ```bash
@@ -65,7 +62,6 @@ echo 'source ~/.dotfiles/zsh/config.zsh' >> ~/.zshrc
 source ~/.zshrc
 ```
 
----
 ## Step 5: Enable LazyVim extras
 
 The config for LazyVim is pretty much the default one, just add some extras to add AI capabilities and goodies.

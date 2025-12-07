@@ -6,19 +6,16 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
 
 ## 🛠 Initial setup
 
-* **Homebrew**
+* **1. Install Homebrew**
   ```bash
-  # 1. Install Homebrew
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   
-* **Ghostty**
+* **2. Install Ghostty**
   ```bash
-  # 2. Install Ghostty
   brew install --cask ghostty
 
-* **Tmux**
+* **3. Install Tmux**
   ```bash
-  # 3. Install Tmux
   brew install tmux
   
 * **Ghostty:** [Download Ghostty](https://mitchellh.com/ghostty)

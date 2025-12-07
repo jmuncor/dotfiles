@@ -10,7 +10,7 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
   ```bash
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-* **1. Install modern bash**
+* **1. Install modern Bash**
   ```bash
   brew install bash
   
@@ -32,24 +32,14 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
   rm -rf ~/.config/nvim/.git
 
 ---
+## Step 2: System linking the config files
 
-## Step 2: Fix the theme crashing
-
-MacOS ships with **Bash v3.2** (from 2007) by default. The `tmux-tokyo-night` plugin requires **Bash 4.0+**. Without this fix, the theme crashes.
-
+Clone the repository:
 ```bash
-# 1. Install modern Bash
-brew install bash
-
-# 2. Add Homebrew binary path to your shell config
-echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
-
-# 3. Reload settings
-source ~/.zshrc
+git clone [https://github.com/jmuncor/dotfiles.git](https://github.com/jmuncor/dotfiles.git) ~/.dotfiles
 ```
 
 ---
-
 ## Step 3: System linking the config files
 
 Link the default config files to the dotfiles folder
@@ -61,10 +51,13 @@ mkdir -p ~/.config/ghostty
 rm ~/.config/ghostty/config
 ln -s ~/.dotfiles/ghostty/config ~/.config/ghostty/config
 
-# 1. Tmux
+# 2. Tmux
 mkdir -p ~/.config/tmux
 rm ~/.tmux.conf
 rm ~/.config/tmux/tmux.conf
 ln -s ~/.dotfiles/tmux/tmux.conf ~/.config/tmux/tmux.conf
+
+# 3. Zsh
+
 
 ```

@@ -59,11 +59,6 @@ source ~/.zshrc
 The config for LazyVim is pretty much the default one, just add some extras to add AI capabilities and goodies.
 Type `:LazyExtras`, navigate to the plugin you want, and press <kbd>x</kbd> to enable it.
 
-## Step 6: Setup Zsh to behave and look decent
-
-The config for LazyVim is pretty much the default one, just add some extras to add AI capabilities and goodies.
-Type `:LazyExtras`, navigate to the plugin you want, and press <kbd>x</kbd> to enable it.
-
 * [x] **ai.copilot** (GitHub Copilot)
 * [x] **ai.avante** (AI coding assistant)
 * [x] **util.mini-hipatterns** (Highlighting utilities)

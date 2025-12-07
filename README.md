@@ -9,6 +9,7 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
 * [**Homebrew:**](https://brew.sh/) Install homebrew package manager.
 * **Ghostty:**
   ```bash
+  # 1. Install Ghostty
   brew install --cask ghostty
 
 * **Ghostty:** [Download Ghostty](https://mitchellh.com/ghostty)

@@ -1,0 +1,37 @@
+# --- THEME & COLORS ---
+# Use the TokyoNight theme to match LazyVim
+theme = tokyonight
+
+# HARDCODED: Forces Ghostty to match LazyVim's exact "Storm" background color
+# This fixes the slight color mismatch between the terminal and editor
+background = #24283b
+
+# --- MACOS INTEGRATION ---
+# Hide the top title bar for a cleaner look
+macos-titlebar-style = hidden
+
+# CRITICAL: Treats the Mac 'Option' key as 'Alt'
+# Without this, LazyVim shortcuts like <Alt+j> (move lines) won't work
+macos-option-as-alt = true
+
+# --- LAYOUT ---
+# Remove the empty gap around Neovim so it fills the screen
+window-padding-x = 0
+window-padding-y = 0
+
+# --- FONT ---
+# ensure you have a Nerd Font installed (e.g. JetBrainsMono, Hack, etc.)
+# If you don't have this font, Ghostty will fallback to a default one.
+font-family = "JetBrainsMono Nerd Font"
+font-size = 14
+
+# --- BEHAVIOR ---
+# Hide mouse when typing (distraction free)
+mouse-hide-while-typing = true
+
+# Stop the "Are you sure?" popup when closing the window
+confirm-close-surface = false
+
+# Standard block cursor with blinking
+cursor-style = block
+cursor-style-blink = true

@@ -31,7 +31,7 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
   git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
   ```
   Install:
-  i)  Press <kbd>Ctrl + b</kbd> then <kbd>Shift + i</kbd> (Capital I).
+  i)  Press <kbd>Ctrl + b</kbd> then <kbd>Shift + i</kbd> (Capital I).  
   ii) Restart tmux with `tmux kill-server` and then restart tmux.
 
 ## Step 2: Get the config files

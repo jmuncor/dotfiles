@@ -2,11 +2,12 @@
 disabled = true
 
 [directory]
-truncation_length = 8   # 0 = shows the full path (Disable truncation)
-truncate_to_repo = false # false = always show full path, not just from the git repo root
-style = "bold cyan"      # Optional: Makes the path color stand out
+truncation_length = 8 # Show 8 folders deep in the path
+truncate-to_repo = true # When working on git just see the project home
 
 [git_metrics]
 disabled = false
 added_style = "bold green"
 deleted_style = "bold red"
+
+

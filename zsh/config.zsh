@@ -10,6 +10,7 @@ export PATH="/opt/homebrew/bin:$PATH"
 export EDITOR='nvim'
 
 # --- 2. Starship Prompt (Visuals) ---
+export STARSHIP_CONFIG=~/.dotfiles/zsh/starship.toml
 eval "$(starship init zsh)"
 
 # --- 3. Aliases (Shortcuts) ---
@@ -46,4 +47,13 @@ fi
 # Syntax Highlighting (Green/Red commands) - MUST BE LAST
 if [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
     source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
+
+# --- Auto-Start Tmux in Ghostty ---
+# Checks if:
+# 1. We are running inside Ghostty (TERM_PROGRAM)
+# 2. We are NOT already inside a Tmux session (TMUX)
+if [[ "$TERM_PROGRAM" == "ghostty" ]] && [[ -z "$TMUX" ]]; then
+    # Try to attach to a session named "main", or create it if missing
+    tmux attach-session -t main || tmux new-session -s main
 fi

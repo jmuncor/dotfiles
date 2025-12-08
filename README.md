@@ -32,7 +32,7 @@ The visual style is unified around the **Tokyo Night** theme. This repository al
   ```
   Install:  
   i)  Press <kbd>Ctrl + b</kbd> then <kbd>Shift + i</kbd> (Capital I).  
-  ii) Restart tmux with `tmux kill-server` and then restart tmux.
+  ii) Restart tmux with `tmux kill-server` and then `tmux`.
 
 ## Step 2: Get the config files
 

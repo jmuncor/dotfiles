@@ -21,10 +21,10 @@ eval "$(starship init zsh)"
 # --group-directories-first: Keeps folders at the top
 
 # Standard Lists
-alias l="eza --icons"
-alias ls="eza --icons"
-alias ll="eza -lg --icons"
-alias la="eza -lag --icons"
+alias l="eza --icons --oneline"
+alias ls="eza --icons --oneline"
+alias ll="eza -lg --icons --oneline"
+alias la="eza -lag --icons --oneline"
 
 # Tree Views (Hierarchy)
 alias lt="eza -lTg --icons"

@@ -3,7 +3,7 @@ disabled = true
 
 [directory]
 truncation_length = 8 # Show 8 folders deep in the path
-truncate-to_repo = true # When working on git just see the project home
+truncate_to_repo = true # When working on git just see the project home
 
 [git_metrics]
 disabled = false

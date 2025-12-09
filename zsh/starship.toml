@@ -1,13 +1,42 @@
+# Define visual Layout
+format = """
+$custom\
+$directory\
+$git_branch\
+$git_metrics\
+$fill\
+$line_break\
+$character"""
+
+# Create the "Top Elbow" (The start of the frame)
+[custom.start_frame]
+command = "echo '╭─'"
+when = "true"
+shell = ["bash", "--noprofile", "--norc"]
+style = "bold #394260"
+format = "[$output]($style)"
+
+# Configure the Fill Line to match
+[fill]
+symbol = "―"
+style = "bold #394260"
+
+# Configure the Character (The Arrow)
+[character]
+success_symbol = "[╰─❯](bold #394260)"
+error_symbol = "[╰─❯](bold #394260)"
+
+# Remove the Google Cloud inline authenticated user
 [gcloud]
 disabled = true
 
+# Truncate the size of the path shown in case is too long
 [directory]
 truncation_length = 8 # Show 8 folders deep in the path
 truncate_to_repo = true # When working on git just see the project home
 
+# Add the git local branch vs origin metrics
 [git_metrics]
 disabled = false
 added_style = "bold green"
 deleted_style = "bold red"
-
-

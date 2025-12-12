@@ -56,6 +56,10 @@ mkdir -p ~/.config/tmux
 rm ~/.tmux.conf
 rm ~/.config/tmux/tmux.conf
 ln -s ~/.dotfiles/tmux/tmux.conf ~/.config/tmux/tmux.conf
+
+# Nvim
+mv ~/.config/nvim ~/dotfiles/nvim
+ln -s ~/dotfiles/nvim ~/.config/nvim
 ```
 
 ## Step 4: Source the config.zsh in the .zshrc file

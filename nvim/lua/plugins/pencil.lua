@@ -25,11 +25,8 @@ return {
           vim.keymap.set({ "n", "x" }, "k", "gk", opts)
 
           -- 3. REMOVE THE POPUP BOX (Autocomplete)
-          -- This specifically tells the completion engine to ignore this buffer
-          local cmp_ok, cmp = pcall(require, "cmp")
-          if cmp_ok then
-            cmp.setup.buffer({ enabled = false })
-          end
+          -- Disable blink.cmp for this buffer
+          vim.b.completion = false
 
           -- 4. REMOVE RED SQUIGGLY LINES (Diagnostics & Spell)
           -- Disable linter warnings

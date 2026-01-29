@@ -23,3 +23,16 @@ brew "prettier"
 cask "ghostty"
 cask "karabiner-elements"
 cask "font-jetbrains-mono-nerd-font"
+
+# Productivity & Utilities
+cask "1password"
+cask "alt-tab"
+cask "google-chrome"
+cask "logitech-g-hub"
+
+# Creative & Media
+cask "inkscape"
+cask "obs"
+
+# Communication
+cask "whatsapp"

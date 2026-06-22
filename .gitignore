@@ -1,0 +1,17 @@
+# Claude Code local MCP server definitions (may contain tokens/secrets)
+mcp-servers.json
+
+# Editor / swap / backup files
+*.swp
+*.swo
+*~
+
+# Logs & temp
+*.log
+*.tmp
+
+# Linux trash / cache
+.cache/
+
+# TPM/plugins: third-party clones, they land here when ~/.config/tmux is a folded stow symlink
+tmux/.config/tmux/plugins/

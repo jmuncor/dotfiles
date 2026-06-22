@@ -1,0 +1,59 @@
+# One Dark palette
+palette = "onedark"
+
+# Define visual Layout
+format = """
+$hostname\
+$directory\
+$git_branch\
+$git_metrics\
+$fill\
+$line_break\
+$character"""
+
+# Configure the Fill Line to match
+[fill]
+symbol = "―"
+style = "bold grey"
+
+# Configure the Character (The Arrow)
+[character]
+success_symbol = "[❯](bold blue)"
+error_symbol = "[❯](bold blue)"
+
+# One Dark palette definition (Atom One Dark)
+[palettes.onedark]
+red = "#e06c75"
+green = "#98c379"
+yellow = "#e5c07b"
+orange = "#d19a66"
+blue = "#61afef"
+purple = "#c678dd"
+cyan = "#56b6c2"
+fg = "#abb2bf"
+grey = "#5c6370"
+bg3 = "#3e4451"
+bg2 = "#2c323c"
+bg = "#282c34"
+
+# Remove the Google Cloud inline authenticated user
+[gcloud]
+disabled = true
+
+# Show the hostname everywhere, local (Mac) and over SSH (servers)
+[hostname]
+ssh_only = false
+ssh_symbol = "🌐 "
+format = "[$ssh_symbol$hostname]($style) "
+style = "bold orange"
+
+# Truncate the size of the path shown in case is too long
+[directory]
+truncation_length = 8 # Show 8 folders deep in the path
+truncate_to_repo = true # When working on git just see the project home
+
+# Add the git local branch vs origin metrics
+[git_metrics]
+disabled = false
+added_style = "bold green"
+deleted_style = "bold red"

@@ -1,0 +1,4 @@
+[fetch]
+	prune = true
+[alias]
+	tidy = "!git fetch --prune && git for-each-ref --format \"%(refname:short) %(upstream:track)\" refs/heads | awk \"\\$2==\\\"[gone]\\\"{print \\$1}\" | while read b; do git branch -D \"$b\"; done"

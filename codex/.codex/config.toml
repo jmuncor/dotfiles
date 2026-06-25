@@ -1,0 +1,19 @@
+[projects."/Users/juancho/Projects/dotfiles"]
+trust_level = "trusted"
+
+[tui]
+# Closest Codex-native equivalent to the Claude command statusline.
+# Codex status lines use built-in item IDs; they do not run a shell command.
+status_line = [
+  "git-branch",
+  "model-with-reasoning",
+  "context-used",
+  "total-input-tokens",
+  "context-window-size",
+  "five-hour-limit",
+  "weekly-limit",
+  "current-dir",
+]
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4

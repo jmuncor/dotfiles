@@ -7,8 +7,9 @@ set -euo pipefail
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$REPO_DIR"
 
-PACKAGES=(alacritty bash claude git nvim starship tmux)
+PACKAGES=(alacritty bash claude codex git nvim starship tmux)
 BREW_BASH="/opt/homebrew/bin/bash"
+NEEDS_FRESH_SHELL=0
 
 log() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 
@@ -24,6 +25,8 @@ fi
 # --- 2. Tools from the Brewfile ----------------------------------------------
 log "Installing tools (brew bundle)"
 brew bundle --file "$REPO_DIR/Brewfile"
+
+mkdir -p "$HOME/.codex"
 
 # --- 3. TPM (tmux plugin manager) --------------------------------------------
 TPM_DIR="$HOME/.config/tmux/plugins/tpm"
@@ -72,7 +75,7 @@ if [ -x "$BREW_BASH" ]; then
   fi
   if [ "${SHELL:-}" != "$BREW_BASH" ]; then
     log "Setting login shell to $BREW_BASH"
-    chsh -s "$BREW_BASH" || log "chsh failed, run: chsh -s $BREW_BASH"
+    chsh -s "$BREW_BASH" && NEEDS_FRESH_SHELL=1 || log "chsh failed, run: chsh -s $BREW_BASH"
   fi
 fi
 
@@ -86,3 +89,15 @@ Done. Two things left to do by hand:
   2. Launch `nvim` once so it bootstraps lazy.nvim and the Mason LSPs.
      Run :checkhealth to verify.
 EOF
+
+if [ "$NEEDS_FRESH_SHELL" -eq 1 ] || { command -v tmux >/dev/null 2>&1 && tmux ls >/dev/null 2>&1; }; then
+  cat <<EOF
+
+Heads up: existing terminal or tmux sessions can keep the old shell environment.
+If Bash, Starship, or Codex panes look wrong after setup, close all terminals or run:
+
+  tmux kill-server
+
+Then open a fresh terminal.
+EOF
+fi

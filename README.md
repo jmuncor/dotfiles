@@ -19,6 +19,7 @@ package whose internal tree mirrors `$HOME`:
 | `starship/` | `~/.config/starship.toml`                            | Cross-shell prompt                      |
 | `git/`      | `~/.config/git/config`                               | Git config + aliases                    |
 | `claude/`   | `~/.claude/settings.json`, `~/.claude/statusline.sh` | Claude Code config + status line        |
+| `codex/`    | `~/.codex/config.toml`                               | Codex config + status line              |
 
 ## Fresh-Mac install
 

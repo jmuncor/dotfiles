@@ -1,0 +1,8 @@
+alacritty
+bash
+claude
+codex
+git
+nvim
+starship
+tmux

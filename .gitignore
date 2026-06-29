@@ -1,17 +1,23 @@
-# Claude Code local MCP server definitions (may contain tokens/secrets)
+# Claude Code MCP files can have tokens in them.
 mcp-servers.json
 
-# Editor / swap / backup files
+# Codex auth and runtime state stay local.
+codex/.codex/auth.json
+codex/.codex/.tmp/
+codex/.codex/sessions/
+codex/.codex/history*
+
+# Editor swap and backups.
 *.swp
 *.swo
 *~
 
-# Logs & temp
+# Logs and scratch files.
 *.log
 *.tmp
 
-# Linux trash / cache
+# Linux cache/trash.
 .cache/
 
-# TPM/plugins: third-party clones, they land here when ~/.config/tmux is a folded stow symlink
+# TPM/plugins are third-party clones under the stowed tmux config.
 tmux/.config/tmux/plugins/

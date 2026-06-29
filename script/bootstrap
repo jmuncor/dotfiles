@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=script/lib.sh
+. "$SCRIPT_DIR/lib.sh"
+
+ROOT="$(repo_root)"
+
+if [ "$#" -ne 1 ]; then
+  die "Usage: $0 {macos|ubuntu}"
+fi
+
+case "$1" in
+  macos)
+    "$ROOT/script/bootstrap-macos"
+    ;;
+  ubuntu)
+    "$ROOT/script/bootstrap-ubuntu"
+    ;;
+  *)
+    die "Unsupported bootstrap target: $1"
+    ;;
+esac
+
+mkdir -p "$HOME/.codex"
+"$ROOT/script/stow"
+
+cat <<'EOF'
+
+Manual follow-up steps:
+  1. Open a fresh shell.
+  2. Inside tmux, press Ctrl-b then I to install plugins.
+  3. Launch nvim once to bootstrap plugins.
+  4. Run :checkhealth in nvim.
+EOF

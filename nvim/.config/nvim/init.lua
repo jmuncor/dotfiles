@@ -1,11 +1,11 @@
--- Load options first (leader key must be set before lazy)
+-- Options first so the leader key exists before plugins load.
 require("config.options")
 
--- Load keymaps
+-- My base keymaps.
 require("config.keymaps")
 
--- Load autocommands
+-- Small editor automations.
 require("config.autocmds")
 
--- Bootstrap and setup lazy.nvim
+-- Plugin manager bootstrap and setup.
 require("config.lazy")

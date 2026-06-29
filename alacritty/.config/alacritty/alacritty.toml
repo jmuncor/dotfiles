@@ -23,7 +23,7 @@ bold_italic = { family = "Lilex Nerd Font", style = "Bold Italic" }
 [scrolling]
 history = 10000
 
-# One Dark (Atom) color scheme
+# Atom One Dark colors.
 [colors.primary]
 background = "#282c34"
 foreground = "#abb2bf"

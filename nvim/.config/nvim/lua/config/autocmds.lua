@@ -1,7 +1,7 @@
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 
--- Highlight on yank
+-- Flash yanked text.
 autocmd("TextYankPost", {
   group = augroup("highlight_yank", { clear = true }),
   callback = function()
@@ -9,7 +9,7 @@ autocmd("TextYankPost", {
   end,
 })
 
--- Restore cursor position
+-- Reopen files where I left off.
 autocmd("BufReadPost", {
   group = augroup("restore_cursor", { clear = true }),
   callback = function()
@@ -21,7 +21,7 @@ autocmd("BufReadPost", {
   end,
 })
 
--- Auto-resize splits
+-- Keep splits balanced after a terminal resize.
 autocmd("VimResized", {
   group = augroup("resize_splits", { clear = true }),
   command = "tabdo wincmd =",

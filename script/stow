@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=script/lib.sh
+. "$SCRIPT_DIR/lib.sh"
+
+ROOT="$(repo_root)"
+PACKAGES_FILE="$ROOT/stow-packages.txt"
+ADOPT=0
+
+read_packages() {
+  local file="$1"
+  local line
+
+  PACKAGES=()
+  while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in
+      '' | \#*) continue ;;
+    esac
+    PACKAGES+=("$line")
+  done < "$file"
+}
+
+if [ "$#" -gt 1 ]; then
+  die "Usage: $0 [--adopt]"
+fi
+
+if [ "$#" -eq 1 ]; then
+  case "$1" in
+    --adopt)
+      ADOPT=1
+      ;;
+    *)
+      die "Usage: $0 [--adopt]"
+      ;;
+  esac
+fi
+
+command_exists stow || die "GNU Stow is required. Install it, then rerun script/stow."
+[ -f "$PACKAGES_FILE" ] || die "Missing $PACKAGES_FILE"
+
+read_packages "$PACKAGES_FILE"
+[ "${#PACKAGES[@]}" -gt 0 ] || die "$PACKAGES_FILE is empty"
+
+for pkg in "${PACKAGES[@]}"; do
+  [ -d "$ROOT/$pkg" ] || die "Missing Stow package directory: $pkg"
+done
+
+if [ "$ADOPT" -eq 1 ]; then
+  warn "--adopt may move existing target files into this repo before git restore resets them"
+  log "Checking Stow adopt plan"
+  if ! OUTPUT="$(stow --dir="$ROOT" --target="$HOME" --no --verbose --adopt "${PACKAGES[@]}" 2>&1)"; then
+    printf '%s\n' "$OUTPUT" >&2
+    die "Stow adopt dry-run failed; no changes made"
+  fi
+  [ -z "$OUTPUT" ] || printf '%s\n' "$OUTPUT"
+
+  log "Stowing with --adopt"
+  stow --dir="$ROOT" --target="$HOME" --verbose --adopt "${PACKAGES[@]}"
+  git -C "$ROOT" restore -- "${PACKAGES[@]}"
+else
+  log "Checking Stow plan"
+  if ! OUTPUT="$(stow --dir="$ROOT" --target="$HOME" --no --verbose "${PACKAGES[@]}" 2>&1)"; then
+    printf '%s\n' "$OUTPUT" >&2
+    die "Stow dry-run failed; conflicts were not changed"
+  fi
+  [ -z "$OUTPUT" ] || printf '%s\n' "$OUTPUT"
+
+  log "Stowing packages"
+  stow --dir="$ROOT" --target="$HOME" --verbose "${PACKAGES[@]}"
+fi

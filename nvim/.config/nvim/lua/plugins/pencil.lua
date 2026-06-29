@@ -4,7 +4,7 @@ return {
     ft = { "markdown", "text", "tex" },
 
     init = function()
-      -- Settings
+      -- Writing defaults.
       vim.g["pencil#wrapModeDefault"] = "soft"
       vim.g["pencil#textwidth"] = 80
       vim.g["pencil#conceallevel"] = 1
@@ -14,24 +14,21 @@ return {
       vim.api.nvim_create_autocmd("FileType", {
         pattern = { "markdown", "text", "tex" },
         callback = function()
-          -- 1. Enable Pencil & Formatting
+          -- Soft wrapping for prose.
           vim.cmd("PencilSoft")
           vim.opt_local.textwidth = 80
-          vim.opt_local.foldcolumn = "2" -- Adds a small left margin
+          vim.opt_local.foldcolumn = "2" -- small left margin
 
-          -- 2. Navigation Fixes (So j/k works on wrapped lines)
+          -- Make j/k follow wrapped screen lines.
           local opts = { buffer = true, silent = true }
           vim.keymap.set({ "n", "x" }, "j", "gj", opts)
           vim.keymap.set({ "n", "x" }, "k", "gk", opts)
 
-          -- 3. REMOVE THE POPUP BOX (Autocomplete)
-          -- Disable blink.cmp for this buffer
+          -- No completion popup while writing prose.
           vim.b.completion = false
 
-          -- 4. REMOVE RED SQUIGGLY LINES (Diagnostics & Spell)
-          -- Disable linter warnings
+          -- Keep prose buffers quiet.
           vim.diagnostic.enable(false, { bufnr = 0 })
-          -- Disable native spell check (if you want zero red lines)
           vim.opt_local.spell = false
         end,
       })

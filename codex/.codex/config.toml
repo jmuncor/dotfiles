@@ -1,14 +1,16 @@
-[projects."/Users/juancho/Projects/dotfiles"]
-trust_level = "trusted"
+# Shared Codex preferences only.
+# Auth, sessions, and machine-local state stay out of git.
+
+model_reasoning_effort = "xhigh"
+approvals_reviewer = "user"
+service_tier = "default"
 
 [tui]
-# Closest Codex-native equivalent to the Claude command statusline.
-# Codex status lines use built-in item IDs; they do not run a shell command.
+# Built-in status line pieces; no shell command here.
 status_line = [
   "git-branch",
   "model-with-reasoning",
   "context-used",
-  "total-input-tokens",
   "context-window-size",
   "five-hour-limit",
   "weekly-limit",
@@ -16,4 +18,7 @@ status_line = [
 ]
 
 [tui.model_availability_nux]
-"gpt-5.5" = 4
+"gpt-5.5" = 1
+
+[projects."/Users/juancho/Projects/dotfiles"]
+trust_level = "trusted"

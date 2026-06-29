@@ -1,5 +1,5 @@
 return {
-  -- Navic: LSP symbol provider
+  -- LSP symbol source for breadcrumbs.
   {
     "SmiteshP/nvim-navic",
     lazy = true,
@@ -8,7 +8,7 @@ return {
     },
   },
 
-  -- Barbecue: winbar breadcrumb UI
+  -- Winbar breadcrumbs.
   {
     "utilyre/barbecue.nvim",
     event = { "BufReadPost", "BufNewFile" },

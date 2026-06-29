@@ -1,3 +1,2 @@
-# ~/.bash_profile is sourced for login shells (e.g. SSH logins).
-# Just source ~/.bashrc so login and non-login shells behave the same.
+# Login shells land here; keep them on the same path as normal shells.
 [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"

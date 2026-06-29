@@ -1,12 +1,12 @@
 return {
-  -- Mason: LSP installer UI
+  -- LSP installer UI.
   {
     "williamboman/mason.nvim",
     cmd = "Mason",
     opts = {},
   },
 
-  -- Mason-lspconfig: auto-install servers
+  -- Auto-install the servers I use.
   {
     "williamboman/mason-lspconfig.nvim",
     dependencies = { "williamboman/mason.nvim" },
@@ -16,7 +16,7 @@ return {
     },
   },
 
-  -- LSP config (using native vim.lsp.config for Neovim 0.11+)
+  -- Native LSP setup for Neovim 0.11+.
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
@@ -27,7 +27,7 @@ return {
     config = function()
       local capabilities = require("blink.cmp").get_lsp_capabilities()
 
-      -- Configure servers using vim.lsp.config (Neovim 0.11+)
+      -- Keep each server explicit so it is easy to add settings later.
       vim.lsp.config("pyright", {
         capabilities = capabilities,
       })
@@ -48,10 +48,10 @@ return {
         capabilities = capabilities,
       })
 
-      -- Enable the servers
+      -- Start the configured servers.
       vim.lsp.enable({ "pyright", "ts_ls", "html", "cssls", "tailwindcss" })
 
-      -- Keymaps on LspAttach
+      -- Buffer-local LSP keymaps.
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(event)
           local map = function(keys, func, desc)
@@ -68,7 +68,7 @@ return {
     end,
   },
 
-  -- Blink.cmp: completion
+  -- Completion.
   {
     "saghen/blink.cmp",
     version = "1.*",

@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
-# Claude Code status line.
-# Segments: model · effort | git(branch*↑↓) worktree +dirs | context% raw-tokens
-#           | rate-limits 5h/7d (+reset) | cost $ + burn $/hr
-# Reads session JSON from stdin (https://code.claude.com/docs/en/statusline)
+# My Claude Code status line.
+# Shows model/effort, git/worktree state, context, rate limits, and cost.
+# Claude passes the session JSON on stdin.
 
 input=$(cat)
 
-# --- grab everything in one jq pass -----------------------------------------
-# Join with US (\x1f), a non-whitespace control char. Unlike a tab it never
-# collapses empty fields in `read`, and it can't show up in a real value.
+# Pull the JSON fields once.
+# Unit separator keeps empty fields intact when `read` splits the result.
 IFS=$'\x1f' read -r \
   MODEL EFFORT SIZE USED_IN USED_OUT USEDPCT \
   CWD SID WORKTREE ADDED \
@@ -35,11 +33,11 @@ IFS=$'\x1f' read -r \
     ] | map(tostring) | join("")'
 )"
 
-# numeric guards (empty -> safe defaults so the math never errors out)
+# Defaults for fields that may be missing from the session JSON.
 SIZE=${SIZE:-200000}; USED_IN=${USED_IN:-0}; USED_OUT=${USED_OUT:-0}
 USEDPCT=${USEDPCT:-0}; ADDED=${ADDED:-0}; COST=${COST:-0}; DURMS=${DURMS:-0}
 
-# --- ANSI helpers ---
+# ANSI helpers.
 R=$'\033[0m'; B=$'\033[1m'; DIM=$'\033[2m'
 GRN=$'\033[32m'; YEL=$'\033[33m'; RED=$'\033[31m'; CYN=$'\033[36m'; MAG=$'\033[35m'
 
@@ -54,7 +52,7 @@ pctcolor() { # used% -> green<60, yellow<85, red
 }
 reset_clock() { # unix-epoch [day] -> 3:45pm, or "Wed 3:45pm" with day flag
   local e=${1%.*}; [ -n "$e" ] || return
-  # GNU date (Linux) uses -d @epoch; BSD date (macOS) uses -r epoch. Try both.
+  # GNU date and BSD date disagree here, so try both.
   local t; t=$(date -d "@$e" "+%l:%M%p" 2>/dev/null || date -r "$e" "+%l:%M%p" 2>/dev/null) || return
   t="${t// /}"; t=$(printf '%s' "$t" | tr '[:upper:]' '[:lower:]')
   local d=""
@@ -64,7 +62,7 @@ reset_clock() { # unix-epoch [day] -> 3:45pm, or "Wed 3:45pm" with day flag
 
 SEGS=()
 
-# 7) git branch / dirty / ahead-behind (cached per session, 3s TTL) -----------
+# Git can be slow, so cache this per session for a few seconds.
 git_info() {
   [ -n "$CWD" ] || return
   local cache="${TMPDIR:-/tmp}/cc-sl-git-${SID:-x}"
@@ -94,24 +92,24 @@ git_info() {
 GIT=$(git_info)
 gseg=""
 [ -n "$GIT" ] && gseg="${CYN}⎇ ${GIT}${R}"
-# 4) worktree + added dirs
+# Worktree and extra dirs.
 [ -n "$WORKTREE" ] && gseg+="${gseg:+ }${MAG}⑂${WORKTREE}${R}"
 [ "${ADDED:-0}" -gt 0 ] 2>/dev/null && gseg+="${gseg:+ }${DIM}+${ADDED}dir${R}"
 [ -n "$gseg" ] && SEGS+=("$gseg")
 
-# model + effort --------------------------------------------------------------
+# Model and effort.
 seg="${MODEL}${R}"
 [ -n "$EFFORT" ] && seg+=" ${DIM}·${EFFORT}${R}"
 SEGS+=("$seg")
 
-# context: used% colored + raw tokens ----------------------------------------
+# Context usage.
 USED=$(( USED_IN + USED_OUT ))
 if   [ "${USEDPCT%.*}" -lt 15 ]; then CC=$GRN
 elif [ "${USEDPCT%.*}" -lt 60 ]; then CC=$YEL
 else CC=$RED; fi
 SEGS+=("${CC}${USEDPCT%.*}% used${R}  ${DIM}$(group "$USED")/$(group "$SIZE") tokens${R}")
 
-# 1b) rate limits 5h / 7d (Pro/Max only; absent for API) ----------------------
+# Rate limits only show up for Pro/Max sessions.
 rl=""
 if [ -n "$H5_PCT" ]; then
   rl="$(pctcolor "$H5_PCT")5h ${H5_PCT%.*}%${R}"
@@ -123,7 +121,7 @@ if [ -n "$D7_PCT" ]; then
 fi
 [ -n "$rl" ] && SEGS+=("$rl")
 
-# --- join with a padded separator -------------------------------------------
+# Join everything with a padded separator.
 out=""
 for s in "${SEGS[@]}"; do out+="${out:+  ${DIM}|${R}  }$s"; done
 printf '%b\n' "$out"

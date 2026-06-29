@@ -1,28 +1,28 @@
-# Everything these dotfiles need on a fresh Mac.
-# Install with:  brew bundle --file Brewfile   (run by ./init.sh)
+# Fresh Mac baseline for these dotfiles.
+# ./init.sh runs this with: brew bundle --file Brewfile
 
-# --- Core shell, multiplexer, deploy ---
-# (no git here: the Xcode Command Line Tools already provide git and the
-#  compiler treesitter needs. A fresh Mac installs them the first time you run
-#  `git`, which happens when you clone this repo, so they're there by init time.)
-brew "bash"        # modern bash 5.x (login shell; macOS ships 3.2)
+# Shell, tmux, and deploy bits.
+# I leave git out because the Xcode Command Line Tools already bring git and
+# the compiler pieces treesitter needs. Cloning this repo is enough to trigger
+# that install on a fresh Mac.
+brew "bash"        # bash 5.x for my login shell; macOS ships 3.2
 brew "tmux"        # multiplexer
-brew "stow"        # symlink-farm manager used to deploy this repo
+brew "stow"        # symlinks the dotfile packages into $HOME
 
-# --- Prompt & CLI niceties ---
+# Prompt and CLI extras.
 brew "starship"    # prompt
-brew "eza"         # better ls (aliased in .bashrc)
-brew "jq"          # used by the Claude Code statusline
+brew "eza"         # better ls, aliased in .bashrc
+brew "jq"          # Claude Code statusline uses this
 
-# --- Editor + its tooling ---
+# Editor and the tools Neovim expects.
 brew "neovim"
-brew "ripgrep"     # telescope live-grep
-brew "fd"          # telescope file-find
+brew "ripgrep"     # Telescope live grep
+brew "fd"          # Telescope file finder
 brew "node"        # Mason JS/TS LSPs
-brew "python"      # python runtime (Mason tools, nvim provider)
-brew "black"       # python formatter (conform on save)
-brew "prettier"    # js/ts/json/md formatter (conform on save)
+brew "python"      # Python runtime, Mason tools, nvim provider
+brew "black"       # Python formatter through conform
+brew "prettier"    # JS/TS/JSON/Markdown formatter through conform
 
-# --- GUI terminal + font ---
+# Terminal and font.
 cask "alacritty"
 cask "font-lilex-nerd-font"

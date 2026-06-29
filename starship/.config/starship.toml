@@ -1,7 +1,7 @@
-# One Dark palette
+# My One Dark palette.
 palette = "onedark"
 
-# Define visual Layout
+# Prompt layout.
 format = """
 $hostname\
 $directory\
@@ -11,17 +11,17 @@ $fill\
 $line_break\
 $character"""
 
-# Configure the Fill Line to match
+# Fill the empty space between path/git info and the prompt character.
 [fill]
 symbol = "―"
 style = "bold grey"
 
-# Configure the Character (The Arrow)
+# Keep the same prompt character for success and errors.
 [character]
 success_symbol = "[❯](bold blue)"
 error_symbol = "[❯](bold blue)"
 
-# One Dark palette definition (Atom One Dark)
+# Atom One Dark colors.
 [palettes.onedark]
 red = "#e06c75"
 green = "#98c379"
@@ -36,23 +36,23 @@ bg3 = "#3e4451"
 bg2 = "#2c323c"
 bg = "#282c34"
 
-# Remove the Google Cloud inline authenticated user
+# Keep the Google Cloud account out of the prompt.
 [gcloud]
 disabled = true
 
-# Show the hostname everywhere, local (Mac) and over SSH (servers)
+# Always show the hostname, local Mac included.
 [hostname]
 ssh_only = false
 ssh_symbol = "🌐 "
 format = "[$ssh_symbol$hostname]($style) "
 style = "bold orange"
 
-# Truncate the size of the path shown in case is too long
+# Keep long paths from taking the whole prompt.
 [directory]
-truncation_length = 8 # Show 8 folders deep in the path
-truncate_to_repo = true # When working on git just see the project home
+truncation_length = 8 # up to 8 folders deep
+truncate_to_repo = true # stop at the repo root in git projects
 
-# Add the git local branch vs origin metrics
+# Show local branch changes against origin.
 [git_metrics]
 disabled = false
 added_style = "bold green"

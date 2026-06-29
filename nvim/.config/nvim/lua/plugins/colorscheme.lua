@@ -6,9 +6,8 @@ return {
     opts = {
       style = "dark",
       transparent = false,
-      -- onedark.nvim auto-styles treesitter, telescope, lualine, native LSP,
-      -- snacks, which-key, etc. out of the box, so no integrations or custom
-      -- highlights are needed.
+      -- onedark already styles treesitter, telescope, lualine, LSP, snacks,
+      -- and which-key well enough for this setup.
     },
     config = function(_, opts)
       require("onedark").setup(opts)

@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=script/lib.sh
+. "$SCRIPT_DIR/lib.sh"
+
+ROOT="$(repo_root)"
+BREW_BASH="/opt/homebrew/bin/bash"
+NEEDS_FRESH_SHELL=0
+
+find_brew() {
+  local candidate
+
+  if command_exists brew; then
+    command -v brew
+    return 0
+  fi
+
+  for candidate in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [ -x "$candidate" ]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+ensure_tpm() {
+  local tpm_dir="$HOME/.config/tmux/plugins/tpm"
+
+  if [ -x "$tpm_dir/tpm" ]; then
+    log "TPM already present"
+    return 0
+  fi
+
+  if [ -e "$tpm_dir" ]; then
+    die "TPM directory exists but $tpm_dir/tpm is missing or not executable"
+  fi
+
+  log "Cloning TPM"
+  mkdir -p "$(dirname "$tpm_dir")"
+  git clone --depth 1 https://github.com/tmux-plugins/tpm "$tpm_dir"
+}
+
+if ! BREW="$(find_brew)"; then
+  log "Installing Homebrew"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  BREW="$(find_brew)" || die "Homebrew installed but brew was not found"
+fi
+
+eval "$("$BREW" shellenv)"
+log "Homebrew present ($("$BREW" --version | head -1))"
+
+log "Installing tools (brew bundle)"
+"$BREW" bundle --file "$ROOT/Brewfile"
+
+ensure_tpm
+
+if [ -x "$BREW_BASH" ]; then
+  if ! grep -qxF "$BREW_BASH" /etc/shells 2>/dev/null; then
+    log "Adding $BREW_BASH to /etc/shells (needs sudo)"
+    echo "$BREW_BASH" | sudo tee -a /etc/shells >/dev/null
+  fi
+
+  if [ "${SHELL:-}" != "$BREW_BASH" ]; then
+    log "Setting login shell to $BREW_BASH"
+    chsh -s "$BREW_BASH" && NEEDS_FRESH_SHELL=1 || warn "chsh failed, run: chsh -s $BREW_BASH"
+  fi
+fi
+
+if [ "$NEEDS_FRESH_SHELL" -eq 1 ] || { command_exists tmux && tmux ls >/dev/null 2>&1; }; then
+  cat <<EOF
+
+Heads up: existing terminal or tmux sessions can keep the old shell environment.
+If Bash, Starship, or Codex panes look wrong after setup, close all terminals or run:
+
+  tmux kill-server
+
+Then open a fresh terminal.
+EOF
+fi

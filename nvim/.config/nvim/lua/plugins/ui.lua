@@ -1,5 +1,5 @@
 return {
-  -- Lualine: statusline
+  -- Statusline.
   {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
@@ -19,14 +19,14 @@ return {
     },
   },
 
-  -- Which-key: keybinding hints
+  -- Keybinding hints.
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
     opts = {},
   },
 
-  -- Devicons: file icons
+  -- File icons.
   {
     "nvim-tree/nvim-web-devicons",
     lazy = true,

@@ -6,6 +6,63 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$SCRIPT_DIR/lib.sh"
 
 ROOT="$(repo_root)"
+BASHRC_BACKUP=""
+
+backup_ubuntu_bashrc() {
+  local path="$HOME/.bashrc"
+  local backup="$path.before-dotfiles"
+  local n=1
+
+  if [ ! -e "$path" ] && [ ! -L "$path" ]; then
+    return 0
+  fi
+
+  if [ -L "$path" ]; then
+    return 0
+  fi
+
+  if [ -d "$path" ]; then
+    die "Cannot back up $path because it is a directory"
+  fi
+
+  while [ -e "$backup" ] || [ -L "$backup" ]; do
+    backup="$path.before-dotfiles.$n"
+    n=$((n + 1))
+  done
+
+  log "Backing up existing $path to $backup"
+  mv "$path" "$backup"
+  BASHRC_BACKUP="$backup"
+}
+
+review_bashrc_backup() {
+  local reply
+
+  if [ -z "$BASHRC_BACKUP" ]; then
+    return 0
+  fi
+
+  printf '\nPrevious Bash config backup:\n  %s\n' "$BASHRC_BACKUP"
+
+  if [ ! -t 0 ]; then
+    printf 'Review it before deleting. To remove it later, run:\n  rm -- %q\n' "$BASHRC_BACKUP"
+    return 0
+  fi
+
+  printf 'Delete this backup now? [y/N] '
+  if ! read -r reply; then
+    reply=
+  fi
+  case "$reply" in
+    [yY] | [yY][eE][sS])
+      rm -- "$BASHRC_BACKUP"
+      log "Deleted $BASHRC_BACKUP"
+      ;;
+    *)
+      printf 'Keeping backup. To remove it later, run:\n  rm -- %q\n' "$BASHRC_BACKUP"
+      ;;
+  esac
+}
 
 if [ "$#" -ne 1 ]; then
   die "Usage: $0 {macos|ubuntu}"
@@ -17,6 +74,7 @@ case "$1" in
     ;;
   ubuntu)
     "$ROOT/script/bootstrap-ubuntu"
+    backup_ubuntu_bashrc
     ;;
   *)
     die "Unsupported bootstrap target: $1"
@@ -25,6 +83,7 @@ esac
 
 mkdir -p "$HOME/.codex"
 "$ROOT/script/stow"
+review_bashrc_backup
 
 cat <<'EOF'
 

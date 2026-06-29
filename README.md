@@ -35,7 +35,10 @@ On Linux this runs `script/bootstrap ubuntu`. That script:
    [`apt-packages.ubuntu.txt`](apt-packages.ubuntu.txt),
 3. installs Starship if it is not already there,
 4. makes sure TPM exists at `~/.config/tmux/plugins/tpm`,
-5. stows the packages listed in [`stow-packages.txt`](stow-packages.txt).
+5. backs up a regular Ubuntu `~/.bashrc` to `~/.bashrc.before-dotfiles` if
+   needed,
+6. stows the packages listed in [`stow-packages.txt`](stow-packages.txt),
+7. shows the backup path and asks whether to delete it.
 
 The Ubuntu package list is just my baseline. It is not supposed to match the
 Mac Brewfile one-for-one.

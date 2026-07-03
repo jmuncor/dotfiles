@@ -39,9 +39,10 @@ half-installing. That script:
    EPEL,
 2. installs Starship if it is not already there,
 3. makes sure TPM exists at `~/.config/tmux/plugins/tpm`,
-4. backs up the stock `~/.bashrc` to `~/.bashrc.before-dotfiles` if needed,
+4. backs up the stock `~/.bashrc` and `~/.bash_profile` to
+   `*.before-dotfiles` if needed,
 5. stows the packages listed in [`stow-packages.txt`](stow-packages.txt),
-6. shows the backup path and asks whether to delete it.
+6. shows the backup paths and asks whether to delete them.
 
 The RHEL package list is just my baseline. It is not supposed to match the
 Mac Brewfile one-for-one.
@@ -52,7 +53,7 @@ After setup I still do these by hand:
 
 1. Open a fresh shell.
 2. Inside tmux, press <kbd>Ctrl-b</kbd> then <kbd>I</kbd> to install plugins.
-3. On the Mac: `open terminal/OneDark.terminal`, then set the "One Dark"
+3. On the Mac: `open terminal/OneDark.terminal`, then set the "OneDark"
    profile as default in Terminal → Settings → Profiles.
 
 ## Stow layout

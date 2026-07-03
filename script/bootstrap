@@ -6,60 +6,68 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$SCRIPT_DIR/lib.sh"
 
 ROOT="$(repo_root)"
-BASHRC_BACKUP=""
+BASH_BACKUPS=()
 
-backup_default_bashrc() {
-  local path="$HOME/.bashrc"
-  local backup="$path.before-dotfiles"
-  local n=1
+backup_default_bash_files() {
+  local path backup n
 
-  if [ ! -e "$path" ] && [ ! -L "$path" ]; then
-    return 0
-  fi
+  # RHEL ships both files in /etc/skel; move them aside so stow can link ours.
+  for path in "$HOME/.bashrc" "$HOME/.bash_profile"; do
+    backup="$path.before-dotfiles"
+    n=1
 
-  if [ -L "$path" ]; then
-    return 0
-  fi
+    if [ ! -e "$path" ] && [ ! -L "$path" ]; then
+      continue
+    fi
 
-  if [ -d "$path" ]; then
-    die "Cannot back up $path because it is a directory"
-  fi
+    if [ -L "$path" ]; then
+      continue
+    fi
 
-  while [ -e "$backup" ] || [ -L "$backup" ]; do
-    backup="$path.before-dotfiles.$n"
-    n=$((n + 1))
+    if [ -d "$path" ]; then
+      die "Cannot back up $path because it is a directory"
+    fi
+
+    while [ -e "$backup" ] || [ -L "$backup" ]; do
+      backup="$path.before-dotfiles.$n"
+      n=$((n + 1))
+    done
+
+    log "Backing up existing $path to $backup"
+    mv "$path" "$backup"
+    BASH_BACKUPS+=("$backup")
   done
-
-  log "Backing up existing $path to $backup"
-  mv "$path" "$backup"
-  BASHRC_BACKUP="$backup"
 }
 
-review_bashrc_backup() {
-  local reply
+review_bash_backups() {
+  local reply backup
 
-  if [ -z "$BASHRC_BACKUP" ]; then
+  if [ "${#BASH_BACKUPS[@]}" -eq 0 ]; then
     return 0
   fi
 
-  printf '\nPrevious Bash config backup:\n  %s\n' "$BASHRC_BACKUP"
+  printf '\nPrevious Bash config backups:\n'
+  printf '  %s\n' "${BASH_BACKUPS[@]}"
 
   if [ ! -t 0 ]; then
-    printf 'Review it before deleting. To remove it later, run:\n  rm -- %q\n' "$BASHRC_BACKUP"
+    printf 'Review before deleting. To remove them later, run:\n'
+    for backup in "${BASH_BACKUPS[@]}"; do
+      printf '  rm -- %q\n' "$backup"
+    done
     return 0
   fi
 
-  printf 'Delete this backup now? [y/N] '
+  printf 'Delete these backups now? [y/N] '
   if ! read -r reply; then
     reply=
   fi
   case "$reply" in
     [yY] | [yY][eE][sS])
-      rm -- "$BASHRC_BACKUP"
-      log "Deleted $BASHRC_BACKUP"
+      rm -- "${BASH_BACKUPS[@]}"
+      log "Deleted backups"
       ;;
     *)
-      printf 'Keeping backup. To remove it later, run:\n  rm -- %q\n' "$BASHRC_BACKUP"
+      printf 'Keeping backups.\n'
       ;;
   esac
 }
@@ -74,7 +82,7 @@ case "$1" in
     ;;
   rhel)
     "$ROOT/script/bootstrap-rhel"
-    backup_default_bashrc
+    backup_default_bash_files
     ;;
   *)
     die "Unsupported bootstrap target: $1"
@@ -82,7 +90,7 @@ case "$1" in
 esac
 
 "$ROOT/script/stow"
-review_bashrc_backup
+review_bash_backups
 
 cat <<'EOF'
 

@@ -1,6 +1,4 @@
 # Juancho's bash setup.
-# My main machine runs Homebrew bash on macOS, but this also works on Linux as
-# long as the same tools are installed.
 
 # Only do this for interactive shells.
 case $- in
@@ -17,9 +15,9 @@ for dir in /opt/homebrew/bin "$HOME/.local/bin"; do
   esac
 done
 
-# Neovim is my default editor.
-export EDITOR='nvim'
-export VISUAL='nvim'
+# Vim as the default editor.
+export EDITOR='vim'
+export VISUAL='vim'
 
 # Silence macOS's "default shell is now zsh" nag for bash.
 export BASH_SILENCE_DEPRECATION_WARNING=1
@@ -48,31 +46,10 @@ if command -v starship >/dev/null 2>&1; then
 fi
 
 # Aliases.
-# eza replaces ls when it is installed.
-if command -v eza >/dev/null 2>&1; then
-  # Flat lists.
-  alias l="eza --icons --oneline"
-  alias ls="eza --icons --oneline"
-  alias ll="eza -lg --icons --oneline"
-  alias la="eza -lag --icons --oneline"
-
-  # Tree views.
-  alias lt="eza -lTg --icons"
-  alias lt1="eza -lTg --level=1 --icons"
-  alias lt2="eza -lTg --level=2 --icons"
-  alias lt3="eza -lTg --level=3 --icons"
-
-  # Tree views with hidden files.
-  alias lta="eza -lTag --icons"
-  alias lta1="eza -lTag --level=1 --icons"
-  alias lta2="eza -lTag --level=2 --icons"
-  alias lta3="eza -lTag --level=3 --icons"
-else
-  # Plain ls fallback.
-  alias ls="ls --color=auto"
-  alias ll="ls -lh --color=auto"
-  alias la="ls -lAh --color=auto"
-fi
+# --color works on GNU ls and on macOS since Ventura.
+alias ls="ls --color=auto"
+alias ll="ls -lh --color=auto"
+alias la="ls -lAh --color=auto"
 
 # Keep grep readable.
 alias grep="grep --color=auto"

@@ -1,8 +1,10 @@
 # Dotfiles
 
-My dotfiles for macOS and Ubuntu/Athena. Everything lives in this repo as GNU
-Stow packages, and [`init.sh`](init.sh) is the entrypoint I use on a fresh
-machine. It checks the OS and then runs the right bootstrap script.
+My dotfiles for macOS and RHEL. Everything lives in this repo as GNU Stow
+packages, and [`init.sh`](init.sh) is the entrypoint I use on a fresh machine.
+It checks the OS and then runs the right bootstrap script. The setup is
+deliberately minimal: stock tools, no plugins beyond tmux, nothing that needs
+extra repos.
 
 ## Fresh Mac
 
@@ -20,7 +22,7 @@ On macOS this ends up running `script/bootstrap macos`. That script:
 4. stows the packages listed in [`stow-packages.txt`](stow-packages.txt),
 5. switches the login shell to `/opt/homebrew/bin/bash` when it can.
 
-## Fresh Ubuntu / Athena
+## Fresh RHEL
 
 ```bash
 git clone https://github.com/jmuncor/dotfiles.git ~/Projects/dotfiles
@@ -28,19 +30,20 @@ cd ~/Projects/dotfiles
 ./init.sh
 ```
 
-On Linux this runs `script/bootstrap ubuntu`. That script:
+On a RHEL-family box (`rhel`, `fedora`, or `centos` in `/etc/os-release`) this
+runs `script/bootstrap rhel`. Anything else fails loudly instead of
+half-installing. That script:
 
-1. runs `sudo apt update`,
-2. installs exactly the packages listed in
-   [`apt-packages.ubuntu.txt`](apt-packages.ubuntu.txt),
-3. installs Starship if it is not already there,
-4. makes sure TPM exists at `~/.config/tmux/plugins/tpm`,
-5. backs up a regular Ubuntu `~/.bashrc` to `~/.bashrc.before-dotfiles` if
-   needed,
-6. stows the packages listed in [`stow-packages.txt`](stow-packages.txt),
-7. shows the backup path and asks whether to delete it.
+1. installs exactly the packages listed in
+   [`dnf-packages.rhel.txt`](dnf-packages.rhel.txt) — base repos only, no
+   EPEL,
+2. installs Starship if it is not already there,
+3. makes sure TPM exists at `~/.config/tmux/plugins/tpm`,
+4. backs up the stock `~/.bashrc` to `~/.bashrc.before-dotfiles` if needed,
+5. stows the packages listed in [`stow-packages.txt`](stow-packages.txt),
+6. shows the backup path and asks whether to delete it.
 
-The Ubuntu package list is just my baseline. It is not supposed to match the
+The RHEL package list is just my baseline. It is not supposed to match the
 Mac Brewfile one-for-one.
 
 ## Manual follow-up
@@ -49,8 +52,8 @@ After setup I still do these by hand:
 
 1. Open a fresh shell.
 2. Inside tmux, press <kbd>Ctrl-b</kbd> then <kbd>I</kbd> to install plugins.
-3. Launch `nvim` once to bootstrap plugins.
-4. Run `:checkhealth` in nvim.
+3. On the Mac: `open terminal/OneDark.terminal`, then set the "One Dark"
+   profile as default in Terminal → Settings → Profiles.
 
 ## Stow layout
 
@@ -58,14 +61,12 @@ Each top-level folder is a Stow package that mirrors paths under `$HOME`:
 
 | Package | Stows to | Purpose |
 | --- | --- | --- |
-| `alacritty/` | `~/.config/alacritty/alacritty.toml` | Terminal config |
 | `bash/` | `~/.bashrc`, `~/.bash_profile` | Shell config |
 | `claude/` | `~/.claude/settings.json`, `~/.claude/statusline.sh` | Claude Code config |
-| `codex/` | `~/.codex/config.toml` | Codex config |
 | `git/` | `~/.config/git/config` | Git config |
-| `nvim/` | `~/.config/nvim/` | Neovim config |
 | `starship/` | `~/.config/starship.toml` | Prompt config |
 | `tmux/` | `~/.config/tmux/tmux.conf` | tmux config |
+| `vim/` | `~/.vimrc` | Vim config |
 
 `script/stow` reads [`stow-packages.txt`](stow-packages.txt) and targets
 `$HOME`. By default it is cautious: it runs a dry run first, prints any
@@ -86,11 +87,25 @@ puts the package contents back to the committed version, so I keep it opt-in.
 [`Brewfile`](Brewfile) is the Mac package list and gets applied with
 `brew bundle`.
 
-[`apt-packages.ubuntu.txt`](apt-packages.ubuntu.txt) is the Ubuntu package
-list and gets applied with `apt`.
+[`dnf-packages.rhel.txt`](dnf-packages.rhel.txt) is the RHEL package list and
+gets applied with `dnf`.
 
 [`stow-packages.txt`](stow-packages.txt) is the shared config package list for
 both platforms.
+
+## Terminal theme
+
+Configs only name the 16 ANSI color slots. What the slots look like — the One
+Dark palette and the Lilex Nerd Font — lives in
+[`terminal/OneDark.terminal`](terminal/OneDark.terminal), imported into
+Terminal.app by hand (follow-up step 3). Not a Stow package; Terminal copies
+it into its own settings.
+
+The RHEL box needs no theme files: the local terminal renders colors and
+fonts, so the stowed configs there pick up One Dark whenever I connect from
+the Mac.
+
+Slot mapping: bright black is the One Dark grey, bright yellow the orange.
 
 ## Secrets
 
@@ -100,25 +115,24 @@ anything else auth-related stays untracked.
 
 ## Clipboard (OSC 52)
 
-Copying inside tmux reaches the system clipboard through OSC 52. `tmux.conf`
-passes the escape sequence through (`set-clipboard on`, `allow-passthrough on`),
-and Alacritty has `osc52 = "CopyPaste"` enabled. That is what makes copy work
-when I SSH into a remote box from inside a Mac tmux pane.
+`tmux.conf` passes OSC 52 through (`set-clipboard on`, `allow-passthrough on`),
+but Terminal.app does not support OSC 52, so remote-to-local copy does not
+work. Local copy goes through tmux-yank and `pbcopy`. If I ever need the
+remote path, I need an OSC 52 capable terminal (iTerm2, kitty).
 
-## Neovim keybindings
+## Vim keybindings
+
+Plugin-free `.vimrc` so the same muscle memory works on any box.
 
 | Key | Action |
 | --- | --- |
 | `<Space>` | Leader key |
-| `<leader>e` | Toggle file explorer |
-| `<leader>ff` | Find files |
-| `<leader>fg` | Live grep |
-| `gd` | Go to definition |
-| `gr` | Find references |
-| `K` | Hover documentation |
-| `<leader>rn` | Rename symbol |
-| `<leader>ca` | Code action |
 | `<leader>w` | Save file |
+| `<leader>q` | Quit |
+| `<Esc><Esc>` | Clear search highlight |
+| `Ctrl-h/j/k/l` | Move between windows |
+| `<` / `>` (visual) | Indent and keep selection |
+| `J` / `K` (visual) | Move selected lines |
 
 ## tmux keybindings
 

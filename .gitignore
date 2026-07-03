@@ -1,11 +1,8 @@
-# Claude Code MCP files can have tokens in them.
-mcp-servers.json
-
-# Codex auth and runtime state stay local.
-codex/.codex/auth.json
-codex/.codex/.tmp/
-codex/.codex/sessions/
-codex/.codex/history*
+# Claude Code: only settings and statusline are tracked; the rest is runtime
+# state and can hold sensitive prompts.
+claude/.claude/*
+!claude/.claude/settings.json
+!claude/.claude/statusline.sh
 
 # Editor swap and backups.
 *.swp

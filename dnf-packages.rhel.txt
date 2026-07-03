@@ -1,0 +1,12 @@
+# Base repos only; no EPEL.
+git
+stow
+curl
+wget
+tmux
+vim-enhanced
+bash-completion
+tree
+unzip
+zip
+jq

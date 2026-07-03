@@ -1,5 +1,4 @@
-# My One Dark palette.
-palette = "onedark"
+# ANSI colors only; the terminal profile decides what they look like.
 
 # Prompt layout.
 format = """
@@ -14,38 +13,24 @@ $character"""
 # Fill the empty space between path/git info and the prompt character.
 [fill]
 symbol = "―"
-style = "bold grey"
+style = "bold bright-black"
 
 # Keep the same prompt character for success and errors.
 [character]
 success_symbol = "[❯](bold blue)"
 error_symbol = "[❯](bold blue)"
 
-# Atom One Dark colors.
-[palettes.onedark]
-red = "#e06c75"
-green = "#98c379"
-yellow = "#e5c07b"
-orange = "#d19a66"
-blue = "#61afef"
-purple = "#c678dd"
-cyan = "#56b6c2"
-fg = "#abb2bf"
-grey = "#5c6370"
-bg3 = "#3e4451"
-bg2 = "#2c323c"
-bg = "#282c34"
-
 # Keep the Google Cloud account out of the prompt.
 [gcloud]
 disabled = true
 
 # Always show the hostname, local Mac included.
+# Bright yellow renders as One Dark orange in the terminal profile.
 [hostname]
 ssh_only = false
 ssh_symbol = "🌐 "
 format = "[$ssh_symbol$hostname]($style) "
-style = "bold orange"
+style = "bold bright-yellow"
 
 # Keep long paths from taking the whole prompt.
 [directory]

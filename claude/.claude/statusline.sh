@@ -91,9 +91,10 @@ git_info() {
 }
 GIT=$(git_info)
 gseg=""
-[ -n "$GIT" ] && gseg="${CYN}⎇ ${GIT}${R}"
+# Nerd Font branch glyph; stock fonts box the fancy Unicode ones.
+[ -n "$GIT" ] && gseg="${CYN} ${GIT}${R}"
 # Worktree and extra dirs.
-[ -n "$WORKTREE" ] && gseg+="${gseg:+ }${MAG}⑂${WORKTREE}${R}"
+[ -n "$WORKTREE" ] && gseg+="${gseg:+ }${MAG}wt:${WORKTREE}${R}"
 [ "${ADDED:-0}" -gt 0 ] 2>/dev/null && gseg+="${gseg:+ }${DIM}+${ADDED}dir${R}"
 [ -n "$gseg" ] && SEGS+=("$gseg")
 

@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$SCRIPT_DIR/lib.sh"
 
 ROOT="$(repo_root)"
-APT_PACKAGES_FILE="$ROOT/apt-packages.ubuntu.txt"
+DNF_PACKAGES_FILE="$ROOT/dnf-packages.rhel.txt"
 
 read_packages() {
   local file="$1"
@@ -38,17 +38,14 @@ ensure_tpm() {
   git clone --depth 1 https://github.com/tmux-plugins/tpm "$tpm_dir"
 }
 
-command_exists apt || die "apt is required for Ubuntu bootstrap"
-[ -f "$APT_PACKAGES_FILE" ] || die "Missing $APT_PACKAGES_FILE"
+command_exists dnf || die "dnf is required for RHEL bootstrap"
+[ -f "$DNF_PACKAGES_FILE" ] || die "Missing $DNF_PACKAGES_FILE"
 
-read_packages "$APT_PACKAGES_FILE"
-[ "${#PACKAGES[@]}" -gt 0 ] || die "$APT_PACKAGES_FILE is empty"
+read_packages "$DNF_PACKAGES_FILE"
+[ "${#PACKAGES[@]}" -gt 0 ] || die "$DNF_PACKAGES_FILE is empty"
 
-log "Updating apt package index"
-sudo apt update
-
-log "Installing Ubuntu packages"
-sudo apt install -y "${PACKAGES[@]}"
+log "Installing RHEL packages"
+sudo dnf install -y "${PACKAGES[@]}"
 
 if command_exists starship; then
   log "Starship already present"

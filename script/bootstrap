@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(repo_root)"
 BASHRC_BACKUP=""
 
-backup_ubuntu_bashrc() {
+backup_default_bashrc() {
   local path="$HOME/.bashrc"
   local backup="$path.before-dotfiles"
   local n=1
@@ -65,23 +65,22 @@ review_bashrc_backup() {
 }
 
 if [ "$#" -ne 1 ]; then
-  die "Usage: $0 {macos|ubuntu}"
+  die "Usage: $0 {macos|rhel}"
 fi
 
 case "$1" in
   macos)
     "$ROOT/script/bootstrap-macos"
     ;;
-  ubuntu)
-    "$ROOT/script/bootstrap-ubuntu"
-    backup_ubuntu_bashrc
+  rhel)
+    "$ROOT/script/bootstrap-rhel"
+    backup_default_bashrc
     ;;
   *)
     die "Unsupported bootstrap target: $1"
     ;;
 esac
 
-mkdir -p "$HOME/.codex"
 "$ROOT/script/stow"
 review_bashrc_backup
 
@@ -90,6 +89,6 @@ cat <<'EOF'
 Manual follow-up steps:
   1. Open a fresh shell.
   2. Inside tmux, press Ctrl-b then I to install plugins.
-  3. Launch nvim once to bootstrap plugins.
-  4. Run :checkhealth in nvim.
+  3. On the Mac: open terminal/OneDark.terminal and set it as the default
+     profile in Terminal settings.
 EOF

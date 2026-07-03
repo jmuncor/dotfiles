@@ -10,6 +10,8 @@
     "command": "~/.claude/statusline.sh",
     "padding": 0
   },
+  "tui": "fullscreen",
   "skipWorkflowUsageWarning": true,
-  "theme": "dark"
+  "theme": "dark",
+  "model": "claude-fable-5[1m]"
 }

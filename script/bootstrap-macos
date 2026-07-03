@@ -74,7 +74,7 @@ if [ "$NEEDS_FRESH_SHELL" -eq 1 ] || { command_exists tmux && tmux ls >/dev/null
   cat <<EOF
 
 Heads up: existing terminal or tmux sessions can keep the old shell environment.
-If Bash, Starship, or Codex panes look wrong after setup, close all terminals or run:
+If Bash or Starship look wrong after setup, close all terminals or run:
 
   tmux kill-server
 

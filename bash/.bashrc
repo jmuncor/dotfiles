@@ -1,11 +1,5 @@
 # Juancho's bash setup.
 
-# Only do this for interactive shells.
-case $- in
-  *i*) ;;
-  *) return ;;
-esac
-
 # PATH.
 # Put Homebrew and user-local bins first, without duplicating entries.
 for dir in /opt/homebrew/bin "$HOME/.local/bin"; do

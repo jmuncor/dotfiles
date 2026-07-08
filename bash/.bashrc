@@ -2,12 +2,22 @@
 
 # PATH.
 # Put Homebrew and user-local bins first, without duplicating entries.
-for dir in /opt/homebrew/bin "$HOME/.local/bin"; do
-  case ":$PATH:" in
-    *":$dir:"*) ;;
-    *) [ -d "$dir" ] && export PATH="$dir:$PATH" ;;
-  esac
-done
+path_prepend() {
+  local dir="$1"
+
+  [ -d "$dir" ] || return
+
+  PATH=$(printf '%s' "$PATH" \
+    | awk -v RS=: -v ORS=: -v d="$dir" '$0 != d' \
+    | sed 's/:$//')
+
+  PATH="$dir:$PATH"
+}
+
+path_prepend /opt/homebrew/bin
+path_prepend "$HOME/.local/bin"
+
+export PATH
 
 # Vim as the default editor.
 export EDITOR='vim'

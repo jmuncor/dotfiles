@@ -62,3 +62,6 @@ alias grep="grep --color=auto"
 if command -v tmux >/dev/null 2>&1 && [ -z "$TMUX" ]; then
   tmux attach-session 2>/dev/null || tmux new-session -s juancho
 fi
+
+# added by simetrik installer
+export PATH="/Users/juancho/.simetrik/bin:$PATH"

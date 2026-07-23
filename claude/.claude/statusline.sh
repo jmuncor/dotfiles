@@ -37,6 +37,10 @@ IFS=$'\x1f' read -r \
 SIZE=${SIZE:-200000}; USED_IN=${USED_IN:-0}; USED_OUT=${USED_OUT:-0}
 USEDPCT=${USEDPCT:-0}; ADDED=${ADDED:-0}; COST=${COST:-0}; DURMS=${DURMS:-0}
 
+# Logged-in Claude account. Not in the session JSON, so read it from the CLI's
+# config; it's static per login and small enough to parse on every render.
+ACCOUNT=$(jq -r '.oauthAccount.emailAddress // empty' "$HOME/.claude.json" 2>/dev/null)
+
 # ANSI helpers.
 R=$'\033[0m'; B=$'\033[1m'; DIM=$'\033[2m'
 GRN=$'\033[32m'; YEL=$'\033[33m'; RED=$'\033[31m'; CYN=$'\033[36m'; MAG=$'\033[35m'
@@ -121,6 +125,10 @@ if [ -n "$D7_PCT" ]; then
   c=$(reset_clock "$D7_RESET" day); [ -n "$c" ] && rl+="${DIM} ${c}${R}"
 fi
 [ -n "$rl" ] && SEGS+=("$rl")
+
+# Logged-in account, last. Dim/gray to match the model segment, with a Nerd
+# Font user glyph in the git segment's glyph style.
+[ -n "$ACCOUNT" ] && SEGS+=("${DIM} ${ACCOUNT}${R}")
 
 # Join everything with a padded separator.
 out=""

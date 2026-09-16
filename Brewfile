@@ -4,7 +4,7 @@
 # git and vim stay out: the Xcode Command Line Tools bring git, and macOS
 # ships vim 9.
 brew "bash"        # bash 5.x for my login shell; macOS ships 3.2
-brew "tmux"        # multiplexer
+brew "herdr"       # agent multiplexer; macOS only, see README
 brew "stow"        # symlinks the dotfile packages into $HOME
 brew "starship"    # prompt
 brew "jq"          # Claude Code statusline uses this

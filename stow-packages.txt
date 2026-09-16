@@ -1,6 +1,6 @@
 bash
 claude
 git
+herdr
 starship
-tmux
 vim

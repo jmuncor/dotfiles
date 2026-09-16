@@ -72,6 +72,93 @@ review_bash_backups() {
   esac
 }
 
+PORTABLE_HERDR_HOOK='[ -f "$HOME/.claude/hooks/herdr-agent-state.sh" ] && sh "$HOME/.claude/hooks/herdr-agent-state.sh" session || true'
+
+# herdr tells Claude Code to report its session id per pane, which is what makes
+# the sidebar show which agent is working and which is waiting on me.
+# This has to run after script/stow: the integration writes to
+# ~/.claude/settings.json, and before stowing that path does not exist yet.
+install_herdr_claude_integration() {
+  local status
+
+  if ! command_exists herdr; then
+    return 0
+  fi
+
+  status="$(herdr integration status 2>/dev/null | sed -n 's/^claude: //p')"
+  case "$status" in
+    current*)
+      log "herdr Claude integration up to date"
+      ;;
+    *)
+      log "Installing herdr Claude integration"
+      herdr integration install claude >/dev/null || warn "herdr integration install claude failed"
+      ;;
+  esac
+
+  normalize_herdr_claude_hook
+}
+
+# The integration writes an absolute hook path, which is machine-specific and
+# would break every other box this repo is stowed onto. Rewrite just that
+# command back to a $HOME-relative, guarded form so the tracked settings.json
+# stays portable and does not show up dirty after every bootstrap.
+normalize_herdr_claude_hook() {
+  local settings="$ROOT/claude/.claude/settings.json"
+
+  [ -f "$settings" ] || return 0
+
+  if ! command_exists python3; then
+    warn "python3 missing; left the herdr hook path as written"
+    return 0
+  fi
+
+  PORTABLE_HERDR_HOOK="$PORTABLE_HERDR_HOOK" python3 - "$settings" <<'PYEOF'
+import json
+import os
+import sys
+
+path = sys.argv[1]
+portable = os.environ["PORTABLE_HERDR_HOOK"]
+
+with open(path, encoding="utf-8") as handle:
+    data = json.load(handle)
+
+changed = False
+hooks = data.get("hooks") or {}
+
+for entries in hooks.values():
+    for entry in entries:
+        for hook in entry.get("hooks", []):
+            command = hook.get("command", "")
+            if "herdr-agent-state.sh" in command and command != portable:
+                hook["command"] = portable
+                changed = True
+
+# `herdr integration install claude` appends its block without checking for one
+# already there, so a second install leaves two identical entries and the hook
+# fires twice per event. Drop exact repeats of the herdr block only; hooks that
+# are not herdr's are left alone even if they happen to match.
+for event, entries in hooks.items():
+    seen = []
+    kept = []
+    for entry in entries:
+        key = json.dumps(entry, sort_keys=True)
+        if "herdr-agent-state.sh" in key and key in seen:
+            changed = True
+            continue
+        seen.append(key)
+        kept.append(entry)
+    hooks[event] = kept
+
+if changed:
+    with open(path, "w", encoding="utf-8") as handle:
+        json.dump(data, handle, indent=2)
+        handle.write("\n")
+    print("normalized the herdr Claude hook: portable path, no duplicates")
+PYEOF
+}
+
 if [ "$#" -ne 1 ]; then
   die "Usage: $0 {macos|rhel}"
 fi
@@ -90,13 +177,14 @@ case "$1" in
 esac
 
 "$ROOT/script/stow"
+install_herdr_claude_integration
 review_bash_backups
 
 cat <<'EOF'
 
 Manual follow-up steps:
-  1. Open a fresh shell.
-  2. Inside tmux, press Ctrl-b then I to install plugins.
-  3. On the Mac: open terminal/OneDark.terminal and set it as the default
-     profile in Terminal settings.
+  1. Open a fresh shell. herdr starts on its own from ~/.bashrc.
+  2. On the Mac: open terminal/OneDark.terminal and set it as the default
+     profile in Terminal settings, then turn on "Use Option as Meta key" so
+     Alt-H and Alt-L switch tabs.
 EOF

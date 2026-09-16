@@ -17,6 +17,10 @@ path_prepend() {
 path_prepend /opt/homebrew/bin
 path_prepend "$HOME/.local/bin"
 
+# Added by the simetrik installer; rewritten to use path_prepend so it stays
+# machine-independent and stops re-adding itself on every shell.
+path_prepend "$HOME/.simetrik/bin"
+
 export PATH
 
 # Vim as the default editor.
@@ -58,10 +62,10 @@ alias la="ls -lAh --color=auto"
 # Keep grep readable.
 alias grep="grep --color=auto"
 
-# Auto-start tmux unless I am already inside it.
-if command -v tmux >/dev/null 2>&1 && [ -z "$TMUX" ]; then
-  tmux attach-session 2>/dev/null || tmux new-session -s juancho
+# Auto-start herdr unless I am already inside it.
+# herdr sets HERDR_ENV=1 in the shells it spawns; without that guard every new
+# pane would launch another herdr inside itself. $PS1 keeps this out of
+# non-interactive login shells (scp, rsync, ssh <cmd>).
+if [ -n "${PS1:-}" ] && [ "${HERDR_ENV:-}" != "1" ] && command -v herdr >/dev/null 2>&1; then
+  herdr
 fi
-
-# added by simetrik installer
-export PATH="/Users/juancho/.simetrik/bin:$PATH"

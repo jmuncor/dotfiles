@@ -21,23 +21,6 @@ read_packages() {
   done < "$file"
 }
 
-ensure_tpm() {
-  local tpm_dir="$HOME/.config/tmux/plugins/tpm"
-
-  if [ -x "$tpm_dir/tpm" ]; then
-    log "TPM already present"
-    return 0
-  fi
-
-  if [ -e "$tpm_dir" ]; then
-    die "TPM directory exists but $tpm_dir/tpm is missing or not executable"
-  fi
-
-  log "Cloning TPM"
-  mkdir -p "$(dirname "$tpm_dir")"
-  git clone --depth 1 https://github.com/tmux-plugins/tpm "$tpm_dir"
-}
-
 command_exists dnf || die "dnf is required for RHEL bootstrap"
 [ -f "$DNF_PACKAGES_FILE" ] || die "Missing $DNF_PACKAGES_FILE"
 
@@ -54,4 +37,9 @@ else
   curl -sS https://starship.rs/install.sh | sh -s -- -y
 fi
 
-ensure_tpm
+# herdr ships no RHEL package and no Linux bottle; upstream only publishes an
+# arm64 macOS build. The stowed config is harmless here, there is just no
+# multiplexer to read it.
+if ! command_exists herdr; then
+  warn "No multiplexer on this box: herdr is macOS-only (see README)."
+fi

@@ -1,0 +1,109 @@
+# Juancho's herdr config: small and portable.
+# Reload a running server after editing: herdr server reload-config
+# Validate after editing:               herdr config check
+# Full commented reference:             herdr --default-config
+
+# I picked my notification setup already; skip first-run onboarding.
+onboarding = false
+
+[terminal]
+# Login shells so ~/.bash_profile and ~/.bashrc both run in every pane.
+shell_mode = "login"
+
+# New panes, tabs, and workspaces inherit the cwd I am already in.
+new_cwd = "follow"
+
+[update]
+channel = "stable"
+
+# Theme.
+# The old tmux statusline named ANSI slots only and let the terminal profile
+# supply the colors. herdr does not validate color values, so an unknown name
+# fails silently; these are the same One Dark values read straight out of
+# terminal/OneDark.terminal, written as hex so they cannot drift.
+[theme]
+name = "one-dark"
+
+# Pin One Dark instead of following the system light/dark setting.
+auto_switch = false
+
+[theme.custom]
+# Blue was the tmux accent: active window chip, active pane border, cursor.
+accent = "#61afef"
+
+# Backgrounds. panel_bg matches the terminal background the way the old
+# `status-style bg=black` did; sidebar sits one shade darker.
+panel_bg = "#282c34"
+sidebar_bg = "#21252b"
+active_row_bg = "#2c313a"
+selection_bg = "#3e4451"
+surface0 = "#2c313a"
+surface1 = "#3e4451"
+surface_dim = "#21252b"
+
+# Greys. overlay0 is the One Dark grey that dimmed inactive windows and pane
+# borders under `fg=brightblack`.
+overlay0 = "#5c6370"
+overlay1 = "#7f848e"
+text = "#abb2bf"
+subtext0 = "#5c6370"
+
+# ANSI slots, straight from the Terminal profile.
+# Bright yellow is the One Dark orange, which is what peach wants.
+red = "#e06c75"
+green = "#98c379"
+yellow = "#e5c07b"
+blue = "#61afef"
+mauve = "#c678dd"
+teal = "#56b6c2"
+peach = "#d19a66"
+
+[ui]
+# Statusline on top, the way `status-position top` had it.
+tab_bar_position = "top"
+
+# Right side of the bar: weekday, date, and 12-hour clock, matching the old
+# `status-right "#[fg=white] %a %b %d  #[fg=blue]%I:%M %p "`.
+tab_bar_right = [{ type = "datetime", format = "%a %b %d  %I:%M %p" }]
+
+# tmux-style splitters: shared dividers, no outside frame, no scrollbars.
+pane_outer_borders = false
+pane_gaps = false
+pane_scrollbars = false
+
+# tmux made a new window immediately; do not stop to ask for a name.
+prompt_new_tab_name = false
+
+# Same blue as the theme accent.
+accent = "#61afef"
+
+# Agent state in the tab bar as symbols, not words.
+status_indicators = "symbols"
+
+# Keybindings.
+# Carried over from tmux.conf so the muscle memory survives.
+[keys]
+prefix = "ctrl+b"
+
+# Splits keep the literal tmux keys. If these feel swapped, trade the two
+# values: herdr names the split after the divider, tmux after the motion.
+split_vertical = "prefix+%"
+split_horizontal = "prefix+\""
+
+# prefix + h/j/k/l moves, prefix + Ctrl-h/j/k/l resizes.
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+resize_pane_left = "prefix+ctrl+h"
+resize_pane_down = "prefix+ctrl+j"
+resize_pane_up = "prefix+ctrl+k"
+resize_pane_right = "prefix+ctrl+l"
+
+# Alt-H / Alt-L walked windows in tmux; tabs are the closest thing here.
+previous_tab = "alt+shift+h"
+next_tab = "alt+shift+l"
+
+# tmux detached on prefix+d and renamed a window on prefix+comma.
+detach = "prefix+d"
+rename_tab = "prefix+comma"

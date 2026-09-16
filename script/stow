@@ -22,6 +22,21 @@ read_packages() {
   done < "$file"
 }
 
+# Stow folds a whole directory into one symlink when the target does not exist
+# yet. For herdr that would point ~/.config/herdr at this repo, and the server
+# would then write session.json, sockets, and logs straight into it. Creating
+# the directory first keeps the fold from happening, so only config.toml links.
+ensure_unfolded_dirs() {
+  local dir
+
+  for dir in "$HOME/.config/herdr"; do
+    [ -d "$dir" ] || {
+      log "Creating $dir so Stow links files instead of folding the directory"
+      mkdir -p "$dir"
+    }
+  done
+}
+
 if [ "$#" -gt 1 ]; then
   die "Usage: $0 [--adopt]"
 fi
@@ -46,6 +61,8 @@ read_packages "$PACKAGES_FILE"
 for pkg in "${PACKAGES[@]}"; do
   [ -d "$ROOT/$pkg" ] || die "Missing Stow package directory: $pkg"
 done
+
+ensure_unfolded_dirs
 
 if [ "$ADOPT" -eq 1 ]; then
   warn "--adopt may move existing target files into this repo before git restore resets them"

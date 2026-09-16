@@ -16,5 +16,7 @@ claude/.claude/*
 # Linux cache/trash.
 .cache/
 
-# TPM/plugins are third-party clones under the stowed tmux config.
-tmux/.config/tmux/plugins/
+# herdr keeps session state, sockets, logs, and plugin locks next to its
+# config. Only config.toml is mine to track.
+herdr/.config/herdr/*
+!herdr/.config/herdr/config.toml

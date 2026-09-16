@@ -3,8 +3,12 @@
 My dotfiles for macOS and RHEL. Everything lives in this repo as GNU Stow
 packages, and [`init.sh`](init.sh) is the entrypoint I use on a fresh machine.
 It checks the OS and then runs the right bootstrap script. The setup is
-deliberately minimal: stock tools, no plugins beyond tmux, nothing that needs
-extra repos.
+deliberately minimal: stock tools, no plugins, nothing that needs extra repos.
+
+The one exception is [herdr](https://herdr.dev), the multiplexer, which
+replaced tmux. It is macOS-only in practice: upstream publishes an arm64 macOS
+build and Homebrew has no Linux bottle, so RHEL boxes get the configs without a
+multiplexer. See [Multiplexer](#multiplexer).
 
 ## Fresh Mac
 
@@ -18,8 +22,9 @@ On macOS this ends up running `script/bootstrap macos`. That script:
 
 1. installs Homebrew if it is missing,
 2. runs `brew bundle` using [`Brewfile`](Brewfile),
-3. makes sure TPM exists at `~/.config/tmux/plugins/tpm`,
-4. stows the packages listed in [`stow-packages.txt`](stow-packages.txt),
+3. stows the packages listed in [`stow-packages.txt`](stow-packages.txt),
+4. installs the herdr Claude Code integration and rewrites its hook path to a
+   `$HOME`-relative one so the tracked `settings.json` stays portable,
 5. switches the login shell to `/opt/homebrew/bin/bash` when it can.
 
 ## Fresh RHEL
@@ -38,7 +43,7 @@ half-installing. That script:
    [`dnf-packages.rhel.txt`](dnf-packages.rhel.txt) — base repos only, no
    EPEL,
 2. installs Starship if it is not already there,
-3. makes sure TPM exists at `~/.config/tmux/plugins/tpm`,
+3. warns that herdr is unavailable on RHEL,
 4. backs up the stock `~/.bashrc` and `~/.bash_profile` to
    `*.before-dotfiles` if needed,
 5. stows the packages listed in [`stow-packages.txt`](stow-packages.txt),
@@ -51,10 +56,11 @@ Mac Brewfile one-for-one.
 
 After setup I still do these by hand:
 
-1. Open a fresh shell.
-2. Inside tmux, press <kbd>Ctrl-b</kbd> then <kbd>I</kbd> to install plugins.
-3. On the Mac: `open terminal/OneDark.terminal`, then set the "OneDark"
+1. Open a fresh shell. herdr starts on its own from `~/.bashrc`.
+2. On the Mac: `open terminal/OneDark.terminal`, then set the "OneDark"
    profile as default in Terminal → Settings → Profiles.
+3. In the same Terminal profile, turn on "Use Option as Meta key" under
+   Keyboard, or <kbd>Alt-H</kbd> and <kbd>Alt-L</kbd> will not switch tabs.
 
 ## Stow layout
 
@@ -65,8 +71,8 @@ Each top-level folder is a Stow package that mirrors paths under `$HOME`:
 | `bash/` | `~/.bashrc`, `~/.bash_profile` | Shell config |
 | `claude/` | `~/.claude/settings.json`, `~/.claude/statusline.sh` | Claude Code config |
 | `git/` | `~/.config/git/config` | Git config |
+| `herdr/` | `~/.config/herdr/config.toml` | Multiplexer config |
 | `starship/` | `~/.config/starship.toml` | Prompt config |
-| `tmux/` | `~/.config/tmux/tmux.conf` | tmux config |
 | `vim/` | `~/.vimrc` | Vim config |
 
 `script/stow` reads [`stow-packages.txt`](stow-packages.txt) and targets
@@ -114,12 +120,39 @@ I do not commit secrets, tokens, auth files, local credentials, SSH keys,
 private keys, or machine-specific private data. Local MCP server definitions and
 anything else auth-related stays untracked.
 
-## Clipboard (OSC 52)
+## Multiplexer
 
-`tmux.conf` passes OSC 52 through (`set-clipboard on`, `allow-passthrough on`),
-but Terminal.app does not support OSC 52, so remote-to-local copy does not
-work. Local copy goes through tmux-yank and `pbcopy`. If I ever need the
-remote path, I need an OSC 52 capable terminal (iTerm2, kitty).
+herdr replaced tmux because it tracks which pane is running which Claude Code
+session and shows in the sidebar which agent is working and which is waiting on
+me. tmux cannot do that natively.
+
+What that costs:
+
+- **macOS only.** Homebrew builds it from source with no Linux bottle, so the
+  RHEL bootstrap warns and moves on. Those boxes now have no multiplexer; long
+  remote work needs `herdr --remote` from the Mac, or tmux installed by hand.
+- **No `vim-tmux-navigator`.** <kbd>Ctrl-h/j/k/l</kbd> still moves between Vim
+  windows and <kbd>Prefix</kbd> + <kbd>h/j/k/l</kbd> between panes, but the two
+  are no longer one seamless motion.
+- **Version 0.9.** It updates itself and rewrites
+  `~/.claude/hooks/herdr-agent-state.sh` when it does, which is why that file is
+  untracked and the hook path in `settings.json` is `$HOME`-relative.
+
+`herdr config check` validates the config. It catches unknown keys, bad theme
+names, and bad keybindings, but it does **not** validate color values — a
+misspelled color is silently ignored, which is why the theme is written as hex.
+
+To keep it running across reboots without opening a terminal:
+`brew services start herdr`.
+
+## Clipboard
+
+herdr copies mouse selections straight to the macOS clipboard (`copy_on_select`,
+on by default), so local copy needs no plugin now that tmux-yank is gone.
+
+Terminal.app still does not support OSC 52, so copying from a remote shell back
+to the local clipboard does not work. That needs an OSC 52 capable terminal
+(iTerm2, kitty).
 
 ## Vim keybindings
 
@@ -135,13 +168,26 @@ Plugin-free `.vimrc` so the same muscle memory works on any box.
 | `<` / `>` (visual) | Indent and keep selection |
 | `J` / `K` (visual) | Move selected lines |
 
-## tmux keybindings
+## herdr keybindings
+
+Splits, resize, and window switching keep the tmux keys. Tabs are the closest
+thing to what tmux called windows.
 
 | Key | Action |
 | --- | --- |
 | `Ctrl-b` | Prefix |
-| `Prefix + I` | Install plugins |
 | `Prefix + %` | Split panes left/right |
 | `Prefix + "` | Split panes top/bottom |
-| `Alt-H` / `Alt-L` | Previous / next window |
+| `Prefix + h/j/k/l` | Move between panes |
 | `Prefix + Ctrl-h/j/k/l` | Resize current pane |
+| `Alt-H` / `Alt-L` | Previous / next tab |
+| `Prefix + c` | New tab |
+| `Prefix + ,` | Rename tab |
+| `Prefix + 1..9` | Jump to tab |
+| `Prefix + d` | Detach |
+| `Prefix + z` | Zoom pane |
+| `Prefix + x` | Close pane |
+| `Prefix + b` | Toggle sidebar |
+| `Prefix + w` | Workspace picker |
+| `Prefix + Shift-G` | New git worktree |
+| `Prefix + ?` | All keybindings |

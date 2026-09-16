@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+# Repairs a Stow-folded directory.
+#
+# Stow folds a package directory into a single symlink when the target does not
+# exist yet, so the first `stow claude` on a clean box points ~/.claude at this
+# repo instead of linking the two tracked files. Everything the app writes
+# afterwards - Claude Code session transcripts, history, telemetry; herdr
+# sockets and logs - then lands inside the repo, where only .gitignore keeps it
+# out of commits.
+#
+# This moves that untracked runtime state back into a real directory under
+# $HOME and re-stows the package, so only tracked files stay as symlinks.
+#
+# Quit the app before running: it holds the directory open.
+#
+# Usage: script/unfold ~/.claude
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=script/lib.sh
+. "$SCRIPT_DIR/lib.sh"
+
+ROOT="$(repo_root)"
+
+[ "$#" -eq 1 ] || die "Usage: $0 <directory>"
+
+TARGET="${1%/}"
+case "$TARGET" in
+  '~'/*) TARGET="$HOME/${TARGET#'~'/}" ;;
+esac
+
+[ -e "$TARGET" ] || die "No such path: $TARGET"
+
+if [ ! -L "$TARGET" ]; then
+  log "$TARGET is already a real directory; nothing to unfold"
+  exit 0
+fi
+
+PKG_DIR="$(cd "$TARGET" && pwd -P)"
+
+case "$PKG_DIR/" in
+  "$ROOT"/*) ;;
+  *) die "$TARGET points to $PKG_DIR, which is outside $ROOT; refusing to touch it" ;;
+esac
+
+REL="${PKG_DIR#"$ROOT"/}"
+PKG="${REL%%/*}"
+
+[ -d "$ROOT/$PKG" ] || die "Could not work out the Stow package for $TARGET"
+
+command_exists stow || die "GNU Stow is required. Install it, then rerun $0."
+
+# Tracked files stay in the repo and get re-linked by Stow. Everything else in
+# the folded directory is runtime state that belongs back in $HOME.
+TRACKED=()
+while IFS= read -r file; do
+  name="${file#"$REL"/}"
+  name="${name%%/*}"
+  [ -n "$name" ] || continue
+  TRACKED+=("$name")
+done < <(git -C "$ROOT" ls-files -- "$REL" | sort -u)
+
+is_tracked() {
+  local candidate="$1" name
+  for name in ${TRACKED+"${TRACKED[@]}"}; do
+    [ "$name" = "$candidate" ] && return 0
+  done
+  return 1
+}
+
+MOVE=()
+while IFS= read -r entry; do
+  base="$(basename "$entry")"
+  is_tracked "$base" || MOVE+=("$base")
+done < <(find "$PKG_DIR" -mindepth 1 -maxdepth 1 | sort)
+
+log "Package:   $PKG"
+log "Folded at: $TARGET -> $PKG_DIR"
+log "Keeping in the repo (tracked): ${TRACKED[*]:-none}"
+
+if [ "${#MOVE[@]}" -eq 0 ]; then
+  log "No untracked runtime state to move"
+else
+  log "Moving back to $TARGET (${#MOVE[@]} entries):"
+  printf '  %s\n' "${MOVE[@]}"
+fi
+
+warn "Quit the app that owns $TARGET before continuing."
+printf 'Proceed? [y/N] '
+read -r reply
+case "$reply" in
+  y | Y | yes | YES) ;;
+  *) die "Aborted; nothing changed" ;;
+esac
+
+log "Removing the folded symlink"
+rm "$TARGET"
+
+log "Creating $TARGET as a real directory"
+mkdir -p "$TARGET"
+
+for base in ${MOVE+"${MOVE[@]}"}; do
+  mv "$PKG_DIR/$base" "$TARGET/$base"
+done
+
+log "Re-stowing $PKG"
+stow --dir="$ROOT" --target="$HOME" --verbose "$PKG"
+
+if [ -L "$TARGET" ]; then
+  die "$TARGET is still a symlink; check the Stow output above"
+fi
+
+log "Done. $TARGET is a real directory and only tracked files are symlinks:"
+for name in ${TRACKED+"${TRACKED[@]}"}; do
+  [ -e "$TARGET/$name" ] && printf '  %s -> %s\n' "$name" "$(readlink "$TARGET/$name" || echo '(not a symlink)')"
+done

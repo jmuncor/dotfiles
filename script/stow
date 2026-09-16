@@ -24,12 +24,23 @@ read_packages() {
 
 # Stow folds a whole directory into one symlink when the target does not exist
 # yet. For herdr that would point ~/.config/herdr at this repo, and the server
-# would then write session.json, sockets, and logs straight into it. Creating
-# the directory first keeps the fold from happening, so only config.toml links.
+# would then write session.json, sockets, and logs straight into it. For
+# ~/.claude it is worse: Claude Code writes session transcripts, history, and
+# telemetry there, and only .gitignore keeps them out of commits. Creating the
+# directory first keeps the fold from happening, so only the tracked files link.
+#
+# An already-folded directory reads as -d, so check -L first and say so instead
+# of silently leaving it folded.
 ensure_unfolded_dirs() {
   local dir
 
-  for dir in "$HOME/.config/herdr"; do
+  for dir in "$HOME/.config/herdr" "$HOME/.claude"; do
+    if [ -L "$dir" ]; then
+      warn "$dir is a Stow fold: runtime state is being written inside this repo"
+      warn "Repair it with: script/unfold $dir"
+      continue
+    fi
+
     [ -d "$dir" ] || {
       log "Creating $dir so Stow links files instead of folding the directory"
       mkdir -p "$dir"

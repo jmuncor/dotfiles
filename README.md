@@ -89,6 +89,26 @@ script/stow --adopt
 `--adopt` can move existing target files into this repo before `git restore`
 puts the package contents back to the committed version, so I keep it opt-in.
 
+### Folded directories
+
+Stow folds a whole package directory into a single symlink when the target does
+not exist yet. On a clean box that turns `~/.claude` into a link straight at
+this repo, and Claude Code then writes session transcripts, history, and
+telemetry *inside the repo*, where only `.gitignore` keeps them out of commits.
+`~/.config/herdr` has the same problem with sockets and logs.
+
+`script/stow` creates those two directories up front so Stow links the tracked
+files individually instead of folding. If one is already folded it says so and
+points at the repair:
+
+```bash
+script/unfold ~/.claude
+```
+
+That moves the untracked runtime state back into `$HOME`, leaves the tracked
+files in the repo, and re-stows the package. Quit the app that owns the
+directory first — `script/unfold` asks before it touches anything.
+
 ## Package lists
 
 [`Brewfile`](Brewfile) is the Mac package list and gets applied with

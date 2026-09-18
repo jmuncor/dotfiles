@@ -62,9 +62,27 @@ peach = "#d19a66"
 # Statusline on top, the way `status-position top` had it.
 tab_bar_position = "top"
 
-# Right side of the bar: weekday, date, and 12-hour clock, matching the old
+# Right side of the bar: battery, then weekday, date, and 12-hour clock. The
+# clock half still matches the old
 # `status-right "#[fg=white] %a %b %d  #[fg=blue]%I:%M %p "`.
-tab_bar_right = [{ type = "datetime", format = "%a %b %d  %I:%M %p" }]
+#
+# herdr has no battery widget, so the percentage comes from a command entry.
+# awk splits the pmset line on semicolons and the tab, which leaves the percent
+# in $2 and the charge state in $3. Any state other than "discharging" means the
+# machine is plugged in, so "charged" and the "not charging" hold that optimized
+# charging produces both keep the bolt.
+#
+# The command is a TOML multi-line literal so awk's own quotes survive as-is;
+# that also passes [;\t] through to awk unescaped, which is what awk wants.
+#
+# pmset is macOS-only, which costs nothing here since herdr does not run on the
+# RHEL boxes anyway. It does matter for `herdr --remote`: command entries are
+# evaluated on the server, so attaching to a Linux host shows an empty segment
+# rather than this laptop's charge.
+tab_bar_right = [
+  { type = "command", command = '''pmset -g batt | awk -F'[;\t]' '/InternalBattery/ { st = $3; sub(/^ +/, "", st); printf "%s%s", (st == "discharging" ? "" : "⚡ "), $2 }' ''', interval_seconds = 60, timeout_seconds = 5 },
+  { type = "datetime", format = "%a %b %d  %I:%M %p" },
+]
 
 # tmux-style splitters: shared dividers, no outside frame, no scrollbars.
 pane_outer_borders = false

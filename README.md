@@ -165,6 +165,21 @@ misspelled color is silently ignored, which is why the theme is written as hex.
 To keep it running across reboots without opening a terminal:
 `brew services start herdr`.
 
+### Status bar
+
+The bar sits on top, the way `status-position top` had it in tmux, and its
+right side reads `76%  Thu Sep 18  1:02 PM`.
+
+The clock is herdr's built-in `datetime` entry. Battery is not built in —
+herdr's status types are `zoom`, `hostname`, `datetime`, `text`, and `command` —
+so the percentage comes from a `command` entry running `pmset` through `awk`
+once a minute. A ⚡ prefix means plugged in, covering charging, fully charged,
+and the "paused at 80%" state battery optimization produces.
+
+Worth knowing: command entries are evaluated on the herdr **server**, not the
+client. Under `herdr --remote` the segment reports the far host, so attaching to
+a Linux box leaves it blank rather than showing this laptop's charge.
+
 ## Clipboard
 
 herdr copies mouse selections straight to the macOS clipboard (`copy_on_select`,

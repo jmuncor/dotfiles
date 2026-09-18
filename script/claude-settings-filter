@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# git clean filter for claude/.claude/settings.json.
+#
+# Claude Code stores generated, machine-specific state in the same user settings
+# file this repo tracks, and it only reads that state from settings.json -- a
+# sibling settings.local.json is project-scoped and is NOT read at ~/.claude,
+# so the block cannot simply be moved aside. The file on disk has to keep it.
+#
+# So strip it on the way into git instead. Reads the working-tree file on stdin
+# and writes the version to be staged on stdout; the file on disk is untouched
+# and Claude Code keeps working. Wired up by .gitattributes plus the
+# filter.claude-settings.clean config that script/bootstrap sets.
+#
+# Anything that is not valid JSON passes through unchanged: a filter that
+# mangles the file on a parse error would be far worse than one that no-ops.
+set -euo pipefail
+
+if ! command -v python3 >/dev/null 2>&1; then
+  cat
+  exit 0
+fi
+
+# -c, not a heredoc: a heredoc would occupy stdin, which is the file content.
+exec python3 -c '
+import collections
+import json
+import sys
+
+# Keys Claude Code generates per machine or per project. autoMode is a briefing
+# on whichever private project was open: repo paths, CI secret names, branch
+# protection posture. This repo is public.
+LOCAL_ONLY_KEYS = ("autoMode",)
+
+raw = sys.stdin.read()
+
+try:
+    data = json.loads(raw, object_pairs_hook=collections.OrderedDict)
+except (ValueError, TypeError):
+    sys.stdout.write(raw)
+    sys.exit(0)
+
+if not isinstance(data, dict) or not any(k in data for k in LOCAL_ONLY_KEYS):
+    sys.stdout.write(raw)
+    sys.exit(0)
+
+for key in LOCAL_ONLY_KEYS:
+    data.pop(key, None)
+
+json.dump(data, sys.stdout, indent=2)
+sys.stdout.write("\n")
+'

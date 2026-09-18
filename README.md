@@ -69,7 +69,7 @@ Each top-level folder is a Stow package that mirrors paths under `$HOME`:
 | Package | Stows to | Purpose |
 | --- | --- | --- |
 | `bash/` | `~/.bashrc`, `~/.bash_profile` | Shell config |
-| `claude/` | `~/.claude/settings.json`, `~/.claude/statusline.sh` | Claude Code config |
+| `claude/` | `~/.claude/settings.json`, `~/.claude/statusline.sh` | Claude Code config (generated keys are stripped on the way into git — see [Secrets](#secrets)) |
 | `git/` | `~/.config/git/config` | Git config |
 | `herdr/` | `~/.config/herdr/config.toml` | Multiplexer config |
 | `starship/` | `~/.config/starship.toml` | Prompt config |
@@ -139,6 +139,49 @@ Slot mapping: bright black is the One Dark grey, bright yellow the orange.
 I do not commit secrets, tokens, auth files, local credentials, SSH keys,
 private keys, or machine-specific private data. Local MCP server definitions and
 anything else auth-related stays untracked.
+
+### Claude Code settings are public
+
+`claude/.claude/settings.json` is tracked, and this repo is public. Claude Code
+writes generated state into that same file — `autoMode` in particular is a
+briefing about whichever private project was open at the time, listing repo
+paths, CI secret *names*, and branch-protection posture. No credential values,
+but not something to publish either.
+
+It cannot simply be moved aside. Claude Code reads `settings.local.json` only
+inside a project directory, **not** at `~/.claude`; parking the block there
+silently reverts auto mode to its shipped defaults. Verified with
+`claude auto-mode config`, which prints the effective config — the block has to
+stay in `settings.json` on disk.
+
+So git carries a stripped copy instead. Two layers, both installed by
+`script/bootstrap`:
+
+- **[`script/claude-settings-filter`](script/claude-settings-filter)** is a git
+  clean filter, wired up by [`.gitattributes`](.gitattributes). It removes the
+  local-only keys from the content being staged and leaves the file on disk
+  untouched, so Claude Code keeps reading them. Non-JSON input passes through
+  unchanged rather than risking a mangled settings file.
+- **`script/hooks/pre-commit`** refuses any commit whose staged `settings.json`
+  still carries a local-only key or an absolute `/Users`/`/home` path. It should
+  never fire; it covers a fresh clone where the filter is not configured yet.
+
+Both are local git config (`core.hooksPath`, `filter.claude-settings.clean`),
+which does not travel with a clone — hence re-running on every bootstrap. To set
+them up by hand:
+
+```bash
+git config core.hooksPath script/hooks
+git config filter.claude-settings.clean script/claude-settings-filter
+git config filter.claude-settings.smudge cat
+git add --renormalize claude/.claude/settings.json
+```
+
+A useful side effect: with the filter on, `settings.json` stops showing up dirty
+in `git status` every time Claude Code rewrites its generated block.
+
+Adding a new local-only key means listing it in both `LOCAL_ONLY_KEYS` arrays —
+one in the filter, one in the hook.
 
 ## Multiplexer
 

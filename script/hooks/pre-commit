@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Backstop: refuse to commit machine-specific Claude Code settings.
+#
+# Claude Code writes generated state into ~/.claude/settings.json, which is a
+# tracked file in a PUBLIC repo. The autoMode block in particular is a briefing
+# about whatever private project was open at the time: repo paths, CI secret
+# names, branch-protection posture. None of that belongs on GitHub.
+#
+# script/claude-settings-filter normally strips those keys before they ever
+# reach the index, so this hook should never fire. It exists for the case where
+# the filter is not configured -- a fresh clone before script/bootstrap has run,
+# since filter.*.clean is local git config and does not travel with the repo.
+set -euo pipefail
+
+SETTINGS='claude/.claude/settings.json'
+LOCAL_ONLY_KEYS=(autoMode)
+
+git diff --cached --name-only --diff-filter=ACM | grep -qxF "$SETTINGS" || exit 0
+
+staged="$(git show ":$SETTINGS" 2>/dev/null)" || exit 0
+
+found=()
+
+for key in "${LOCAL_ONLY_KEYS[@]}"; do
+  if printf '%s' "$staged" | python3 -c "
+import json,sys
+sys.exit(0 if '$key' in json.load(sys.stdin) else 1)
+" 2>/dev/null; then
+    found+=("top-level key \"$key\"")
+  fi
+done
+
+# Absolute paths under /Users or /home are machine-specific by definition; the
+# tracked copy should use \$HOME-relative or ~ forms.
+if printf '%s' "$staged" | grep -qE '"/(Users|home)/'; then
+  found+=("an absolute /Users or /home path")
+fi
+
+[ "${#found[@]}" -eq 0 ] && exit 0
+
+cat >&2 <<EOF
+
+Refusing to commit $SETTINGS
+
+  This repo is PUBLIC. The staged copy contains:
+EOF
+printf '    - %s\n' "${found[@]}" >&2
+cat >&2 <<EOF
+
+  The clean filter that strips this is not configured in this clone. Note that
+  moving the block to settings.local.json does NOT work: Claude Code reads that
+  name only inside a project, not at ~/.claude, so the key has to stay on disk.
+
+  Enable the filter, then stage again:
+
+    git config filter.claude-settings.clean script/claude-settings-filter
+    git config filter.claude-settings.smudge cat
+
+  Or just run script/bootstrap, which sets both. To override for one commit
+  (you probably do not want to):
+
+    git commit --no-verify
+
+EOF
+exit 1

@@ -159,6 +159,38 @@ if changed:
 PYEOF
 }
 
+# Claude Code regenerates machine-specific blocks (autoMode) straight into the
+# tracked settings.json, and this repo is public. It only reads that block from
+# settings.json itself, so it cannot be moved to a gitignored sibling -- instead
+# a clean filter strips it on the way into git, and a pre-commit hook catches
+# the case where the filter is not configured yet. Same shape as
+# normalize_herdr_claude_hook above: a tool writes local state into a shared
+# file, so bootstrap arranges for git not to carry it.
+#
+# Both settings are local git config, which does not travel with a clone, which
+# is exactly why this runs on every bootstrap.
+install_repo_git_guards() {
+  command_exists git || return 0
+
+  if [ "$(git -C "$ROOT" config --local core.hooksPath 2>/dev/null || true)" = "script/hooks" ]; then
+    log "Repo git hooks already enabled"
+  else
+    log "Enabling repo git hooks (core.hooksPath=script/hooks)"
+    git -C "$ROOT" config core.hooksPath script/hooks || warn "could not set core.hooksPath"
+  fi
+
+  if [ "$(git -C "$ROOT" config --local filter.claude-settings.clean 2>/dev/null || true)" = "script/claude-settings-filter" ]; then
+    log "Claude settings clean filter already enabled"
+  else
+    log "Enabling Claude settings clean filter"
+    git -C "$ROOT" config filter.claude-settings.clean script/claude-settings-filter || warn "could not set the clean filter"
+    git -C "$ROOT" config filter.claude-settings.smudge cat || warn "could not set the smudge filter"
+  fi
+
+  # The index can hold a pre-filter copy from before the filter existed.
+  git -C "$ROOT" add --renormalize claude/.claude/settings.json 2>/dev/null || true
+}
+
 if [ "$#" -ne 1 ]; then
   die "Usage: $0 {macos|rhel}"
 fi
@@ -178,6 +210,7 @@ esac
 
 "$ROOT/script/stow"
 install_herdr_claude_integration
+install_repo_git_guards
 review_bash_backups
 
 cat <<'EOF'

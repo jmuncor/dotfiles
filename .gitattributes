@@ -1,0 +1,3 @@
+# Strip machine-specific Claude Code state on the way into git.
+# See script/claude-settings-filter and the Secrets section of README.md.
+claude/.claude/settings.json filter=claude-settings

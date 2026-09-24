@@ -5,7 +5,20 @@
       "WebFetch"
     ]
   },
-  "model": "opus[1m]",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -f \"$HOME/.claude/hooks/herdr-agent-state.sh\" ] && sh \"$HOME/.claude/hooks/herdr-agent-state.sh\" session || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh",
@@ -20,18 +33,5 @@
   "skipWorkflowUsageWarning": true,
   "theme": "dark",
   "agentPushNotifEnabled": true,
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "[ -f \"$HOME/.claude/hooks/herdr-agent-state.sh\" ] && sh \"$HOME/.claude/hooks/herdr-agent-state.sh\" session || true",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
-  }
+  "model": "claude-fable-5-1[1m]"
 }

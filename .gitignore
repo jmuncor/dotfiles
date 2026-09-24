@@ -20,3 +20,8 @@ claude/.claude/*
 # config. Only config.toml is mine to track.
 herdr/.config/herdr/*
 !herdr/.config/herdr/config.toml
+
+# Zed keeps its prompt library database and themes next to settings.json.
+# Only the settings are mine to track.
+zed/.config/zed/*
+!zed/.config/zed/settings.json

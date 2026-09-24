@@ -4,3 +4,4 @@ git
 herdr
 starship
 vim
+zed

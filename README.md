@@ -76,6 +76,7 @@ Each top-level folder is a Stow package that mirrors paths under `$HOME`:
 | `herdr/` | `~/.config/herdr/config.toml` | Multiplexer config |
 | `starship/` | `~/.config/starship.toml` | Prompt config |
 | `vim/` | `~/.vimrc` | Vim config |
+| `zed/` | `~/.config/zed/settings.json` | Zed editor settings |
 
 `script/stow` reads [`stow-packages.txt`](stow-packages.txt) and targets
 `$HOME`. By default it is cautious: it runs a dry run first, prints any
@@ -97,9 +98,10 @@ Stow folds a whole package directory into a single symlink when the target does
 not exist yet. On a clean box that turns `~/.claude` into a link straight at
 this repo, and Claude Code then writes session transcripts, history, and
 telemetry *inside the repo*, where only `.gitignore` keeps them out of commits.
-`~/.config/herdr` has the same problem with sockets and logs.
+`~/.config/herdr` has the same problem with sockets and logs, and
+`~/.config/zed` with its prompt library database.
 
-`script/stow` creates those two directories up front so Stow links the tracked
+`script/stow` creates those three directories up front so Stow links the tracked
 files individually instead of folding. If one is already folded it says so and
 points at the repair:
 

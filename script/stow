@@ -26,7 +26,8 @@ read_packages() {
 # yet. For herdr that would point ~/.config/herdr at this repo, and the server
 # would then write session.json, sockets, and logs straight into it. For
 # ~/.claude it is worse: Claude Code writes session transcripts, history, and
-# telemetry there, and only .gitignore keeps them out of commits. Creating the
+# telemetry there, and only .gitignore keeps them out of commits. Zed would do
+# the same with its prompt library database under ~/.config/zed. Creating the
 # directory first keeps the fold from happening, so only the tracked files link.
 #
 # An already-folded directory reads as -d, so check -L first and say so instead
@@ -34,7 +35,7 @@ read_packages() {
 ensure_unfolded_dirs() {
   local dir
 
-  for dir in "$HOME/.config/herdr" "$HOME/.claude"; do
+  for dir in "$HOME/.config/herdr" "$HOME/.claude" "$HOME/.config/zed"; do
     if [ -L "$dir" ]; then
       warn "$dir is a Stow fold: runtime state is being written inside this repo"
       warn "Repair it with: script/unfold $dir"

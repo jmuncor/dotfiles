@@ -61,6 +61,8 @@ After setup I still do these by hand:
    profile as default in Terminal → Settings → Profiles.
 3. In the same Terminal profile, turn on "Use Option as Meta key" under
    Keyboard, or <kbd>Alt-H</kbd> and <kbd>Alt-L</kbd> will not switch tabs.
+4. `gh auth login`, then sign in to Tailscale from the menu bar so the
+   homelab is reachable. Both keep their credentials outside this repo.
 
 ## Stow layout
 

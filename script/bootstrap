@@ -220,4 +220,6 @@ Manual follow-up steps:
   2. On the Mac: open terminal/OneDark.terminal and set it as the default
      profile in Terminal settings, then turn on "Use Option as Meta key" so
      Alt-H and Alt-L switch tabs.
+  3. On the Mac: run `gh auth login`, then sign in to Tailscale from the menu
+     bar to reach the homelab.
 EOF

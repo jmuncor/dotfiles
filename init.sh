@@ -1,33 +1,29 @@
 #!/usr/bin/env bash
-
-if [ -z "${BASH_VERSION:-}" ]; then
-  exec bash "$0" "$@"
-fi
-
+# Entrypoint for a fresh machine: work out which bootstrap target this OS is
+# and hand off to script/bootstrap. macOS and RHEL-family Linux only; anything
+# else fails loudly instead of half-installing.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=script/lib.sh
+. "$ROOT/script/lib.sh"
+
 OS="$(uname -s)"
 
 case "$OS" in
   Darwin)
-    "$ROOT/script/bootstrap" macos
+    TARGET=macos
     ;;
   Linux)
-    # RHEL-family only; anything else fails loudly.
     [ -r /etc/os-release ] && . /etc/os-release
     case " ${ID:-} ${ID_LIKE:-} " in
-      *rhel* | *fedora* | *centos*)
-        "$ROOT/script/bootstrap" rhel
-        ;;
-      *)
-        printf 'Unsupported Linux distro: %s\n' "${ID:-unknown}" >&2
-        exit 1
-        ;;
+      *rhel* | *fedora* | *centos*) TARGET=rhel ;;
+      *) die "Unsupported Linux distro: ${ID:-unknown}" ;;
     esac
     ;;
   *)
-    printf 'Unsupported OS: %s\n' "$OS" >&2
-    exit 1
+    die "Unsupported OS: $OS"
     ;;
 esac
+
+exec "$ROOT/script/bootstrap" "$TARGET"

@@ -9,10 +9,8 @@ brew "stow"        # symlinks the dotfile packages into $HOME
 brew "starship"    # prompt
 brew "jq"          # Claude Code statusline uses this
 brew "gh"          # GitHub CLI; needs `gh auth login` after setup
-brew "btop"        # resource monitor
 brew "node"        # JavaScript runtime
 brew "pnpm"        # Node package manager
-brew "wireshark"   # tshark and friends; CLI only, no GUI
 
 # Homelab access. This is the menu bar client with its own system extension;
 # sign in from the menu bar after setup. The `tailscale` formula is the

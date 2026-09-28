@@ -216,7 +216,8 @@ review_bash_backups
 cat <<'EOF'
 
 Manual follow-up steps:
-  1. Open a fresh shell. herdr starts on its own from ~/.bashrc.
+  1. Open a fresh shell. It is a plain shell: on the Mac run `herdr` for a
+     session here, or `herdr --remote <ssh-target>` for one on the homelab.
   2. On the Mac: open terminal/OneDark.terminal and set it as the default
      profile in Terminal settings, then turn on "Use Option as Meta key" so
      Alt-H and Alt-L switch tabs.

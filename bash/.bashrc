@@ -62,10 +62,3 @@ alias la="ls -lAh --color=auto"
 # Keep grep readable.
 alias grep="grep --color=auto"
 
-# Auto-start herdr unless I am already inside it.
-# herdr sets HERDR_ENV=1 in the shells it spawns; without that guard every new
-# pane would launch another herdr inside itself. $PS1 keeps this out of
-# non-interactive login shells (scp, rsync, ssh <cmd>).
-if [ -n "${PS1:-}" ] && [ "${HERDR_ENV:-}" != "1" ] && command -v herdr >/dev/null 2>&1; then
-  herdr
-fi

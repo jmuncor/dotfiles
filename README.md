@@ -56,7 +56,8 @@ Mac Brewfile one-for-one.
 
 After setup I still do these by hand:
 
-1. Open a fresh shell. herdr starts on its own from `~/.bashrc`.
+1. Open a fresh shell. It is a plain shell: run `herdr` for a session here,
+   or `herdr --remote <ssh-target>` for one on the homelab.
 2. On the Mac: `open terminal/OneDark.terminal`, then set the "OneDark"
    profile as default in Terminal → Settings → Profiles.
 3. In the same Terminal profile, turn on "Use Option as Meta key" under
@@ -208,6 +209,10 @@ What that costs:
 `herdr config check` validates the config. It catches unknown keys, bad theme
 names, and bad keybindings, but it does **not** validate color values — a
 misspelled color is silently ignored, which is why the theme is written as hex.
+
+herdr does not start itself from `~/.bashrc` any more. A new terminal is a
+plain shell, and I run `herdr` or `herdr --remote <ssh-target>` depending on
+whether the work is here or on the homelab.
 
 To keep it running across reboots without opening a terminal:
 `brew services start herdr`.

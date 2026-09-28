@@ -1,11 +1,9 @@
 # Base repos only; no EPEL.
+#
+# Just enough to bootstrap and to make the prompt look like the Mac's: git to
+# clone, stow to link the packages, curl for the Starship installer. Starship
+# itself is not here -- script/bootstrap-rhel fetches it. Everything else goes
+# on by hand; these boxes do not need my whole Mac baseline.
 git
 stow
 curl
-wget
-vim-enhanced
-bash-completion
-tree
-unzip
-zip
-jq

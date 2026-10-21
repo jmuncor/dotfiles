@@ -223,4 +223,8 @@ Manual follow-up steps:
      Alt-H and Alt-L switch tabs.
   3. On the Mac: run `gh auth login`, then sign in to Tailscale from the menu
      bar to reach the homelab.
+  4. On the Mac: open Raycast and give it Cmd-Space, which needs Spotlight's
+     shortcut turned off first (System Settings > Keyboard > Keyboard
+     Shortcuts > Spotlight). Then import the saved settings from Raycast
+     Settings > Advanced.
 EOF

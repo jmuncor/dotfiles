@@ -25,3 +25,7 @@ herdr/.config/herdr/*
 # Only the settings are mine to track.
 zed/.config/zed/*
 !zed/.config/zed/settings.json
+
+# Raycast settings exports carry extension preferences, which can include
+# tokens. They are not dotfiles and do not belong here.
+*.rayconfig

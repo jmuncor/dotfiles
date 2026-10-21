@@ -24,6 +24,10 @@ cask "font-lilex-nerd-font"
 cask "claude"
 cask "claude-code"
 
+# Launcher on Cmd-Space in place of Spotlight. Its settings are not dotfiles;
+# they come back through Raycast's own export/import, see README.
+cask "raycast"
+
 # Desktop apps.
 cask "1password"
 cask "google-chrome"

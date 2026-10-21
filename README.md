@@ -64,6 +64,11 @@ After setup I still do these by hand:
    Keyboard, or <kbd>Alt-H</kbd> and <kbd>Alt-L</kbd> will not switch tabs.
 4. `gh auth login`, then sign in to Tailscale from the menu bar so the
    homelab is reachable. Both keep their credentials outside this repo.
+5. On the Mac: open Raycast once and give it <kbd>Cmd-Space</kbd> when it asks
+   for a hotkey. That only takes once Spotlight's own shortcut is off, under
+   System Settings → Keyboard → Keyboard Shortcuts → Spotlight. Then bring the
+   settings back with Raycast Settings → Advanced → Import. See
+   [Launcher](#launcher).
 
 ## Stow layout
 
@@ -143,7 +148,8 @@ Slot mapping: bright black is the One Dark grey, bright yellow the orange.
 
 I do not commit secrets, tokens, auth files, local credentials, SSH keys,
 private keys, or machine-specific private data. Local MCP server definitions and
-anything else auth-related stays untracked.
+anything else auth-related stays untracked, and so does the Raycast export (see
+[Launcher](#launcher)).
 
 ### Claude Code settings are public
 
@@ -240,6 +246,24 @@ on by default), so local copy needs no plugin now that tmux-yank is gone.
 Terminal.app still does not support OSC 52, so copying from a remote shell back
 to the local clipboard does not work. That needs an OSC 52 capable terminal
 (iTerm2, kitty).
+
+## Launcher
+
+Raycast replaces Spotlight on the Mac and comes in through the
+[`Brewfile`](Brewfile) like every other cask. It is macOS-only, so the RHEL
+bootstrap has nothing to install and nothing to warn about.
+
+It is not a Stow package. Raycast keeps its state in its own database under
+`~/Library/Application Support/com.raycast.macos/`, not in a config file I
+could track, so the hotkey, aliases, snippets, and extension settings travel
+through Raycast's own Settings → Advanced → Export / Import, or Cloud Sync when
+signed in. The export is a password-protected `.rayconfig` file because
+extension preferences can hold API tokens. It stays outside this repo, and
+`.gitignore` refuses it in case one lands here by accident.
+
+First launch asks for a hotkey. <kbd>Cmd-Space</kbd> belongs to Spotlight until
+its shortcut is turned off, and Raycast offers to open the right System
+Settings pane when that happens.
 
 ## Vim keybindings
 
